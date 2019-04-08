@@ -18,8 +18,20 @@
 #' @import ggplot2
 #' @export
 
+library(genedroppeR)
 
-locus_summary <- function(id, mother, father, cohort, genotype, na.include = F, delim = ""){
+data("unicorn")
+head(unicorn)
+table(unicorn$cohort)
+unicorn <- subset(unicorn, cohort %in% 1:10)
+
+
+id       <- unicorn$id
+mother   <- unicorn$mother
+father   <- unicorn$father
+cohort   <- unicorn$cohort
+genotype <- unicorn$genotype
+genotype.delim = ""
 
   require(plyr)
   require(reshape2)
@@ -34,24 +46,19 @@ locus_summary <- function(id, mother, father, cohort, genotype, na.include = F, 
   ped$MOTHER[which(ped$MOTHER == 0)] <- NA
   ped$FATHER[which(ped$FATHER == 0)] <- NA
 
-  genotype <- as.character(genotype)
-
-  genos <- unique(genotype) %>% sort
-
-
-    alleles <- genos %>%
+  if
+  alleles <- as.character(genotype) %>%
+    unique %>%
+    sort %>%
     strsplit(split = delim) %>%
     unlist %>%
     unique
 
+  #~~ Summarise the data by cohort
 
-
-
-  #~~ Summarise the data by birth year
-
-  suppressMessages(x <- table(cohort, genotype, useNA = "always") %>%
+  suppressMessages(x <- table(ped$cohort, ped$genotype, useNA = "always") %>%
                      data.frame %>%
-                     dcast(cohort ~ genotype))
+                     dcast(ped$cohort ~ ped$genotype))
 
   names(x)[1] <- "cohort"
 

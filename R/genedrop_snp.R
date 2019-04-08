@@ -15,6 +15,8 @@
 #'   For individuals with no known genotype, their genotypes are sampled based
 #'   on the observed cohort allele frequency. If FALSE, then all IDs are sampled
 #'   based on the cohort allele frequencies.
+#' @param verbose logical. Output the progress of the run.
+#' @param interval int. Default 100. Output progress every 100 simulations.
 #' @import plyr
 #' @import kinship2
 #' @import magrittr
@@ -29,7 +31,9 @@ genedrop_snp <- function(id,
                          genotype,
                          nsim,
                          n_founder_cohorts,
-                         fix_founders = T){
+                         fix_founders = T,
+                         verbose = T,
+                         interval = 100){
   
   require(kinship2)
   require(magrittr)
@@ -45,7 +49,7 @@ genedrop_snp <- function(id,
   
   #~~ If cohort is provided, then check there are no NA's.
   
-  if(!is.null(cohort) & any(is.na(cohort))) stop("NAs present in cohort")
+  if(!is.null(cohort) & any(is.na(cohort))) message("NAs present in cohort - these individuals will be removed.")
   
   #~~ If genotype is provided, then check the locus is not monomorphic.
   
@@ -195,6 +199,7 @@ genedrop_snp <- function(id,
   
   for(simulation in 1:nsim){
     
+    if(verbose) if(simulation %in% seq(1, nsim, interval)) message(paste0("Running simulation ", simulation, " of ", nsim, "."))
     #~~ Create a data frame with space for the results
     
     haplo.frame <- ped
@@ -251,7 +256,7 @@ genedrop_snp <- function(id,
     haplo.frame$FATHER <- NULL
     haplo.frame$founder <- NULL
     
-    haplo.frame$Iteration <- simulation
+    haplo.frame$Simulation <- simulation
     
     sim.list[[simulation]] <- haplo.frame
     
