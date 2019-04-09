@@ -2,7 +2,7 @@
 % Please edit documentation in R/genedrop_snp.R
 \name{genedrop_snp}
 \alias{genedrop_snp}
-\title{Conduct a single Gene-Drop Simulation.}
+\title{Conduct a single Gene-Drop Simulation for a biallelic locus}
 \usage{
 genedrop_snp(id, mother, father, cohort = NULL, genotype, nsim,
   n_founder_cohorts, fix_founders = T, verbose = T, interval = 100)
@@ -36,5 +36,5 @@ based on the cohort allele frequencies.}
 \item{interval}{int. Default 100. Output progress every 100 simulations.}
 }
 \description{
-Conduct a single Gene-Drop Simulation.
+Conduct a single Gene-Drop Simulation for a biallelic locus
 }
