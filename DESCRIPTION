@@ -1,6 +1,6 @@
 Package: genedroppeR
 Type: Package
-Title: Gene-drop through pedigrees.
+Title: Gene-drop alleles through pedigrees.
 Version: 0.1.0
 Author: person("Susan", "Johnston",
   email = "Susan.Johnston@ed.ac.uk",
