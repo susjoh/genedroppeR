@@ -3,7 +3,7 @@
 #' Summarise observed and simulated allele frequencies by simulation and cohort for a genedrop object.
 #'
 #' @param genedrop_object Output from genedrop_snp() or genedrop_multi()
-#' @param genotype.delim char. Default = "". Delimiter character for genotypes.
+#' @param genotype_delim char. Default = ''. Delimiter character for genotypes.
 #' @import plyr
 #' @import kinship2
 #' @import magrittr
@@ -12,7 +12,7 @@
 
 
 
-genedrop_summary <- function(genedrop_object, genotype.delim = ""){
+genedrop_summary <- function(genedrop_object, genotype_delim = ''){
 
   require(magrittr)
   require(reshape2)
@@ -66,15 +66,14 @@ genedrop_summary <- function(genedrop_object, genotype.delim = ""){
 
     x1 <- x1[,c("Cohort", "Simulation", "Count", "p", "Allele")]
 
-
     rm(x2a, x2b)
 
     # observed frequencies
 
     x3 <- subset(genedrop_object, Simulation == 1) %>% subset(select = c(True.Geno, cohort)) %>% na.omit
 
-    x3$Allele1 <- sapply(x3$True.Geno, function(foo) strsplit(foo, split = genotype.delim, fixed = T)[[1]][1])
-    x3$Allele2 <- sapply(x3$True.Geno, function(foo) strsplit(foo, split = genotype.delim, fixed = T)[[1]][2])
+    x3$Allele1 <- sapply(x3$True.Geno, function(foo) strsplit(foo, split = genotype_delim, fixed = T)[[1]][1])
+    x3$Allele2 <- sapply(x3$True.Geno, function(foo) strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
 
     x4 <- melt(x3[,c("cohort", "Allele1", "Allele2")], id.vars = c("cohort"))
 
@@ -95,7 +94,7 @@ genedrop_summary <- function(genedrop_object, genotype.delim = ""){
 
   }
 
-  return(list("observed_frequencies" = x3,
-              "simulated_frequencies" = x1))
+  return(list(observed_frequencies = x3,
+              simulated_frequencies = x1))
 
 }

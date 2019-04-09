@@ -4,12 +4,12 @@
 \alias{genedrop_summary}
 \title{Summarise allele frequencies from a genedrop object.}
 \usage{
-genedrop_summary(genedrop_object, genotype.delim = "")
+genedrop_summary(genedrop_object, genotype_delim = "")
 }
 \arguments{
 \item{genedrop_object}{Output from genedrop_snp() or genedrop_multi()}
 
-\item{genotype.delim}{char. Default = "". Delimiter character for genotypes.}
+\item{genotype_delim}{char. Default = ''. Delimiter character for genotypes.}
 }
 \description{
 Summarise observed and simulated allele frequencies by simulation and cohort for a genedrop object.
