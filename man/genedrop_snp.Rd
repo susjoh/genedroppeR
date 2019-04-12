@@ -5,7 +5,8 @@
 \title{Conduct a single Gene-Drop Simulation for a biallelic locus}
 \usage{
 genedrop_snp(id, mother, father, cohort = NULL, genotype, nsim,
-  n_founder_cohorts, fix_founders = T, verbose = T, interval = 100)
+  n_founder_cohorts = 1, fix_founders = T, verbose = T,
+  interval = 100)
 }
 \arguments{
 \item{id}{vector. Individual IDs}

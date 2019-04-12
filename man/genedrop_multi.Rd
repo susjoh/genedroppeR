@@ -5,7 +5,7 @@
 \title{Conduct a single Gene-Drop Simulation for a multi-allelic locus.}
 \usage{
 genedrop_multi(id, mother, father, cohort = NULL, genotype,
-  genotype_delim = "", nsim, n_founder_cohorts, fix_founders = T,
+  genotype_delim = "", nsim, n_founder_cohorts = 1, fix_founders = T,
   verbose = T, interval = 100)
 }
 \arguments{

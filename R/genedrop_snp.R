@@ -32,7 +32,7 @@ genedrop_snp <- function(id,
                          cohort = NULL,
                          genotype,
                          nsim,
-                         n_founder_cohorts,
+                         n_founder_cohorts = 1,
                          fix_founders = T,
                          verbose = T,
                          interval = 100){

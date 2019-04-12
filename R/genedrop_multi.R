@@ -35,7 +35,7 @@ genedrop_multi <- function(id,
                          genotype,
                          genotype_delim = '',
                          nsim,
-                         n_founder_cohorts,
+                         n_founder_cohorts = 1,
                          fix_founders = T,
                          verbose = T,
                          interval = 100){
