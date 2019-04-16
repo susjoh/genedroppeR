@@ -12,7 +12,7 @@
 
 
 
-genedrop_summary <- function(genedrop_object, genotype_delim = ''){
+summary_genedrop <- function(genedrop_object, genotype_delim = ''){
 
   require(magrittr)
   require(reshape2)

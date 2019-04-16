@@ -15,7 +15,7 @@
 #' @export
 
 
-cohort_summary <- function(id,
+summary_cohort <- function(id,
                            mother,
                            father,
                            cohort = NULL,
