@@ -1,13 +1,16 @@
 #' Summarise cohorts.
 #'
-#' Summarise cohorts by number of founders, proportion of individuals genotyped and/or allele frequency information at a given locus.
+#' Summarise cohorts by number of founders, proportion of individuals genotyped
+#' and/or allele frequency information at a given locus.
 #'
 #' @param id vector. Individual IDs
 #' @param mother vector. Maternal IDs corresponding to id.
 #' @param father vector. Paternal IDs corresponding to id.
-#' @param cohort vector (optional). Cohort number (e.g. birth year) corresponding to the id.
+#' @param cohort vector (optional). Cohort number (e.g. birth year)
+#'   corresponding to the id.
 #' @param genotype vector. Genotypes IDs corresponding to id.
-#' @param genotype_delim char. A character denoting the genotype delimited. Default = "".
+#' @param genotype_delim char. A character denoting the genotype delimited.
+#'   Default = ''.
 #' @import plyr
 #' @import kinship2
 #' @import magrittr
@@ -22,25 +25,24 @@ summary_cohort <- function(id,
                            genotype = NULL,
                            genotype_delim = ''){
 
-  require(plyr)
-  require(reshape2)
-  require(kinship2)
-  require(magrittr)
-
   #~~ Check that there are no duplicate IDs.
 
-  if(any(as.numeric(names(table(table(id)))) > 1)) stop("Duplicated values in id")
+  if (any(as.numeric(names(table(table(id)))) > 1)){
+    stop("Duplicated values in id")
+  }
 
   #~~ If genotype is provided, then check the locus is not monomorphic.
 
-  if(!is.null(genotype) & length(table(genotype)) == 1) stop("Locus is monomorphic")
+  if (!is.null(genotype) & length(table(genotype)) == 1){
+    stop("Locus is monomorphic")
+  }
 
   #~~ If genotype is numeric, then only accept if 0, 1, 2
 
-  if(!is.null(genotype) & is.numeric(genotype)){
+  if (!is.null(genotype) & is.numeric(genotype)){
 
-    if(any(!na.omit(genotype) %in% 0:2)){
-      stop("Dosage is only tolerated for biallelic markers and should be coded as 0, 1, 2.")
+    if (any(!na.omit(genotype) %in% 0:2)){
+      stop ("Dosage should be coded as 0, 1, 2.")
     }
 
     genotype[genotype == 0] <- "AA"
@@ -62,7 +64,7 @@ summary_cohort <- function(id,
 
   #~~ Add cohort information to ped.
 
-  if(!is.null(cohort)) {
+  if (!is.null(cohort)) {
 
     ped$cohort <- cohort
 
@@ -76,11 +78,11 @@ summary_cohort <- function(id,
   #~~ Add the genotype information.
 
 
-  if(is.null(genotype)){
+  if (is.null(genotype)){
 
     ped2 <- table(ped$cohort, useNA = "always")
     ped2 <- matrix(ped2, ncol = 1, dimnames = list(names(ped2), "FullCount"))
-    if(any(is.na(row.names(ped2)))) row.names(ped2)[which(is.na(row.names(ped2)))] <- "missing"
+    if (any(is.na(row.names(ped2)))) row.names(ped2)[which(is.na(row.names(ped2)))] <- "missing"
     ped2 <- data.frame(ped2)
     ped2$cohort <- row.names(ped2)
 
@@ -96,7 +98,7 @@ summary_cohort <- function(id,
 
     ped2 <- table(ped2$cohort, ped2$value, useNA = "always")
     ped2 <- matrix(ped2, ncol = ncol(ped2), dimnames = dimnames(ped2))
-    if(any(is.na(row.names(ped2)))) row.names(ped2)[which(is.na(row.names(ped2)))] <- "missing"
+    if (any(is.na(row.names(ped2)))) row.names(ped2)[which(is.na(row.names(ped2)))] <- "missing"
     ped2 <- data.frame(ped2)
     ped2 <- cbind(cohort = row.names(ped2), ped2)
 
