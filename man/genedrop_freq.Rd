@@ -2,10 +2,11 @@
 % Please edit documentation in R/genedrop_freq.R
 \name{genedrop_freq}
 \alias{genedrop_freq}
-\title{Conduct a single Gene-Drop Simulation for a biallelic locus}
+\title{Conduct a single Gene-Drop Simulation with founder allele frequencies.}
 \usage{
-genedrop_freq(id, mother, father, cohort = NULL, genotype, nsim,
-  verbose = T, interval = 100)
+genedrop_freq(id, mother, father, cohort = NULL, allele_ids,
+  founder_allele_freqs, nsim, genotype_delim = "", verbose = T,
+  interval = 100)
 }
 \arguments{
 \item{id}{vector. Individual IDs}
@@ -17,25 +18,16 @@ genedrop_freq(id, mother, father, cohort = NULL, genotype, nsim,
 \item{cohort}{vector (optional). Cohort number (e.g. birth year)
 corresponding to the id.}
 
-\item{genotype}{vector. Genotypes IDs corresponding to id.}
-
 \item{nsim}{integer. Number of genedrop simulations to run.}
+
+\item{genotype_delim}{char. A character denoting the genotype delimited.
+Default = "".}
 
 \item{verbose}{logical. Output the progress of the run.}
 
 \item{interval}{int. Default 100. Output progress every 100 simulations.}
-
-\item{n_founder_cohorts}{integer. The number of cohorts at the top of the
-pedigree that will sample from the true allele frequences (these are
-defined as "sampled"). All cohorts following these ones are "simulated" and
-are used for comparisons of changes in allele frequency.}
-
-\item{fix_founders}{logical. Default = TRUE. Determines whether individuals
-in founder cohorts should be given their true recorded genotypes (if
-known). For individuals with no known genotype, their genotypes are sampled
-based on the observed cohort allele frequency. If FALSE, then all IDs are
-sampled based on the cohort allele frequencies.}
 }
 \description{
-Conduct a single Gene-Drop Simulation for a biallelic locus
+Conduct a simple gene-drop analysis at a single locus, defining alleles and
+allele frequencies in the founder cohort.
 }

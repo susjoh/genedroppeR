@@ -25,6 +25,7 @@
 #' @import magrittr
 #' @export
 
+
 genedrop_snp <- function(id,
                          mother,
                          father,
@@ -232,12 +233,28 @@ genedrop_snp <- function(id,
 
     for(h in 1:n_founder_cohorts){
 
-      y1 <- which(haplo.frame$cohort %in% x$cohort[h] & !haplo.frame$ID %in% fixed_founders)
+      y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER) & !haplo.frame$ID %in% fixed_founders)
 
-      haplo.frame$Mum.Allele[y1] <- sapply(y1, function(y) ((runif (1) > x$p[h]) + 0L))
-      haplo.frame$Dad.Allele[y1] <- sapply(y1, function(y) ((runif (1) > x$p[h]) + 0L))
+      haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
+                                          1,
+                                          function(y) y[((runif (1) > 0.5) + 1L)])
 
-      rm(y1)
+      y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER) & !haplo.frame$ID %in% fixed_founders)
+
+      haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
+                                          1,
+                                          function(y) y[((runif (1) > 0.5) + 1L)])
+
+      y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Mum.Allele))
+
+      haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) ((runif (1) > x$p[h]) + 0L))
+
+      y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Dad.Allele))
+
+      haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) ((runif (1) > x$p[h]) + 0L))
+
+      rm(y1, y2, y3, y4)
+
     }
 
     cohort.freqs <- data.frame(Sum = tapply(haplo.frame$Mum.Allele, haplo.frame$cohort, sum) +

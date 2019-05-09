@@ -205,12 +205,28 @@ genedrop_multi <- function(id,
 
     for(h in 1:n_founder_cohorts){
 
-      y1 <- which(haplo.frame$cohort %in% x$cohort[h] & !haplo.frame$ID %in% fixed_founders)
+      y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER) & !haplo.frame$ID %in% fixed_founders)
 
-      haplo.frame$Mum.Allele[y1] <- sapply(y1, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
-      haplo.frame$Dad.Allele[y1] <- sapply(y1, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+      haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
+                                          1,
+                                          function(y) y[((runif (1) > 0.5) + 1L)])
 
-      rm(y1)
+      y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER) & !haplo.frame$ID %in% fixed_founders)
+
+      haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
+                                          1,
+                                          function(y) y[((runif (1) > 0.5) + 1L)])
+
+      y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Mum.Allele))
+
+      haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+
+      y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Dad.Allele))
+
+      haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+
+      rm(y1, y2, y3, y4)
+
     }
 
     #~~ sample the rest
