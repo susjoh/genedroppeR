@@ -247,12 +247,15 @@ genedrop_snp <- function(id,
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Mum.Allele))
 
-      haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) ((runif (1) > x$p[h]) + 0L))
+      if(length(y3) > 0){
+        haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) ((runif (1) > x$p[h]) + 0L))
+      }
 
       y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Dad.Allele))
 
-      haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) ((runif (1) > x$p[h]) + 0L))
-
+      if(length(y4) > 0){
+        haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) ((runif (1) > x$p[h]) + 0L))
+      }
       rm(y1, y2, y3, y4)
 
     }
@@ -291,12 +294,15 @@ genedrop_snp <- function(id,
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$MOTHER))
 
-      haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) ((runif (1) > cohort.freqs$p[h]) + 0L))
+      if(length(y3) > 0){
+        haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) ((runif (1) > cohort.freqs$p[h]) + 0L))
+      }
 
       y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$FATHER))
 
-      haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) ((runif (1) > cohort.freqs$p[h]) + 0L))
-
+      if(length(y4) > 0){
+        haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) ((runif (1) > cohort.freqs$p[h]) + 0L))
+      }
       rm(y1, y2, y3, y4)
 
     }

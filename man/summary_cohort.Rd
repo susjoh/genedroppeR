@@ -4,8 +4,8 @@
 \alias{summary_cohort}
 \title{Summarise cohorts.}
 \usage{
-summary_cohort(id, mother, father, cohort = NULL, genotype = NULL,
-  genotype_delim = "")
+summary_cohort(id, mother = NULL, father = NULL, cohort = NULL,
+  genotype = NULL, genotype_delim = "")
 }
 \arguments{
 \item{id}{vector. Individual IDs}

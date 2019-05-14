@@ -14,10 +14,6 @@
 
 summary_genedrop <- function(genedrop_object, genotype_delim = ''){
 
-  require(magrittr)
-  require(reshape2)
-  require(plyr)
-
   genedrop_object <- subset(genedrop_object, !is.na(True.Geno))
 
   if(is.numeric(genedrop_object$Simulated.Geno)){

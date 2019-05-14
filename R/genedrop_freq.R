@@ -29,9 +29,6 @@ genedrop_freq <- function(id,
                           verbose = T,
                           interval = 100){
 
-  require(kinship2)
-  require(reshape2)
-  require(plyr)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # 1. Format the data           #
@@ -174,7 +171,7 @@ genedrop_freq <- function(id,
   }
 
   sim.results <- do.call(rbind, sim.list)
-  sim.results$Simulated.Geno <- paste0(sim.results$Mum.Allele, "genotype_delim", sim.results$Dad.Allele)
+  sim.results$Simulated.Geno <- paste0(sim.results$Mum.Allele, genotype_delim, sim.results$Dad.Allele)
 
   sim.results
 

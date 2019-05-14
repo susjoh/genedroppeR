@@ -19,8 +19,8 @@
 
 
 summary_cohort <- function(id,
-                           mother,
-                           father,
+                           mother = NULL,
+                           father = NULL,
                            cohort = NULL,
                            genotype = NULL,
                            genotype_delim = ''){
@@ -52,11 +52,20 @@ summary_cohort <- function(id,
     message("Locus summary AA, AB, BB corresponds to 0, 1, 2")
   }
 
+  #~~ If no parents are defined, output a message...
+
+  if(is.null(mother) & is.null(father)){
+
+    message("No parents defined: proportion of founders cannot be calculated.")
+
+  }
+
   #~~ Make a ped object.
 
+
   ped <- data.frame(ID     = id,
-                    MOTHER = mother,
-                    FATHER = father)
+                    MOTHER = ifelse(is.null(mother), NA, mother),
+                    FATHER = ifelse(is.null(father), NA, father))
 
   ped$MOTHER[which(ped$MOTHER == 0)] <- NA
   ped$FATHER[which(ped$FATHER == 0)] <- NA
@@ -119,6 +128,11 @@ summary_cohort <- function(id,
   ped$founder <- kindepth(ped[,1], ped[,2], ped[,3])
 
   suppressMessages(x1 <- table(ped$cohort, ped$founder == 0) %>% data.frame %>% dcast(Var1 ~ Var2))
+
+  if(ncol(x1) == 2){
+    x1$V3 <- NA
+    x1 <- x1[,c(1, 3, 2)]
+  }
 
   names(x1) <- c("cohort", "NonFounders", "Founders")
 
