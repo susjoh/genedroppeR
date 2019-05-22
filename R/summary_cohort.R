@@ -62,10 +62,13 @@ summary_cohort <- function(id,
 
   #~~ Make a ped object.
 
+  if(is.null(mother)) mother <- rep(NA, times = length(id))
+  if(is.null(father)) father <- rep(NA, times = length(id))
+
 
   ped <- data.frame(ID     = id,
-                    MOTHER = ifelse(is.null(mother), NA, mother),
-                    FATHER = ifelse(is.null(father), NA, father))
+                    MOTHER = mother,
+                    FATHER = father)
 
   ped$MOTHER[which(ped$MOTHER == 0)] <- NA
   ped$FATHER[which(ped$FATHER == 0)] <- NA

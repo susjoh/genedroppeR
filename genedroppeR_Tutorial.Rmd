@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # `genedropper`: conduct a gene-drop analysis through a pedigree.
 ### Susan Johnston, May 2019
 
