@@ -93,6 +93,8 @@ plot_genedrop_lm_slopes <- function(genedrop_object_summary,
 
   for(i in 1:max(genedrop_object_summary$simulated_frequencies$Simulation)){
 
+    if(i %in% seq(1, max(genedrop_object_summary$simulated_frequencies$Simulation), 100)) print(paste("Calculating slope", i, "in", max(genedrop_object_summary$simulated_frequencies$Simulation)))
+
     for(j in Allele){
 
       x <- subset(genedrop_object_summary$simulated_frequencies, Simulation == i & Allele == j)
