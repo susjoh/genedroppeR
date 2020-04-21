@@ -1,7 +1,7 @@
 ---
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 # `genedropper`: conduct a gene-drop analysis through a pedigree.
 ### Susan Johnston, May 2019
@@ -200,7 +200,7 @@ unicorn.summ <- summary_cohort(id = unicorn$id,
 
 unicorn.summ
 
-unicorn.MHC.UF <- genedrop_multi(id = unicorn$id,
+unicorn.MHC.UF <- genedrop_multi_warbler(id = unicorn$id,
                                  mother = unicorn$mother,
                                  father = unicorn$father,
                                  cohort = unicorn$cohort,
@@ -209,7 +209,7 @@ unicorn.MHC.UF <- genedrop_multi(id = unicorn$id,
                                  n_founder_cohorts = 5,
                                  fix_founders = F,
                                  verbose = T,
-                                 interval = 200)
+                                 interval = 1)
 
 unicorn.MHC.UF.summ <- summary_genedrop(unicorn.MHC.UF)
 
