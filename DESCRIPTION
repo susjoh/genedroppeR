@@ -1,0 +1,13 @@
+Package: genedroppeR
+Type: Package
+Title: Gene-drop alleles through pedigrees.
+Version: 0.1.1
+Author: person("Susan", "Johnston",
+  email = "Susan.Johnston@ed.ac.uk",
+  role = c("aut", "cre"))
+Description: This package conducts gene-drop analyses through pedigrees.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports: ggplot2, reshape2, dplyr, kinship2, magrittr
+RoxygenNote: 7.2.3
