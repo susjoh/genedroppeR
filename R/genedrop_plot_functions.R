@@ -6,6 +6,20 @@
 #' @import ggplot2
 #' @export
 
+unicorn.UF <- genedrop_snp(id = unicorn$id,
+                           mother = unicorn$mother,
+                           father = unicorn$father,
+                           cohort = unicorn$cohort,
+                           genotype = unicorn$HornSNP,
+                           nsim = 1000,
+                           n_founder_cohorts = 5,
+                           fix_founders = F,
+                           verbose = T,
+                           interval = 200)
+
+genedrop_object_summary <- summary_genedrop(unicorn.UF)
+sim_alpha = 0.2
+obs_line_col = "red"
 
 plot_genedrop_results <- function(genedrop_object_summary,
                                   sim_alpha = 0.2,
@@ -56,7 +70,6 @@ plot_genedrop_lm_slopes <- function(genedrop_object_summary,
                                     method = "lm",
                                     obs_line_col = "red"){
 
-  sim.slopes <- NULL
 
   genedrop_object_summary$simulated_frequencies$Simulation <- as.numeric(as.character(genedrop_object_summary$simulated_frequencies$Simulation))
   genedrop_object_summary$simulated_frequencies$Cohort <- as.numeric(as.character(genedrop_object_summary$simulated_frequencies$Cohort))
@@ -88,45 +101,14 @@ plot_genedrop_lm_slopes <- function(genedrop_object_summary,
 
   }
 
-  for(i in 1:max(genedrop_object_summary$simulated_frequencies$Simulation)){
 
-    if(i %in% seq(1, max(genedrop_object_summary$simulated_frequencies$Simulation), 100)) print(paste("Calculating slope", i, "in", max(genedrop_object_summary$simulated_frequencies$Simulation)))
+  sim.slopes <- genedrop_object_summary$simulated_frequencies %>%
+    group_by(Simulation, Allele) %>%
+    summarise(Slope = lm(p ~ Cohort)$coefficients[[2]])
 
-    for(j in Allele){
-
-      x <- subset(genedrop_object_summary$simulated_frequencies, Simulation == i & Allele == j)
-      x1 <- lm(p ~ Cohort, data = x)$coefficients[[2]]
-
-      sim.slopes <- rbind(sim.slopes,
-                          data.frame(Iteration = i,
-                                     Allele = j,
-                                     Slope = x1))
-
-      rm(x1)
-
-    }
-
-  }
-
-  true.slopes <- NULL
-
-  for(i in 0){
-
-    for(j in Allele){
-
-      x <- subset(genedrop_object_summary$observed_frequencies, Simulation == i & Allele == j)
-      x1 <- lm(p ~ Cohort, data = x)$coefficients[[2]]
-
-      true.slopes <- rbind(true.slopes,
-                           data.frame(Iteration = i,
-                                      Allele = j,
-                                      Slope = x1))
-
-      rm(x1)
-
-    }
-
-  }
+  true.slopes <- genedrop_object_summary$observed_frequencies %>%
+    group_by(Simulation, Allele) %>%
+    summarise(Slope = lm(p ~ Cohort)$coefficients[[2]])
 
 
   print(ggplot(sim.slopes, aes(Slope)) +
@@ -219,26 +201,18 @@ plot_genedrop_cumulative_change <- function(genedrop_object_summary,
     sum(x, na.rm = F)
   }
 
-  sim.changes <- tapply(genedrop_object_summary$simulated_frequencies$p,
-                        list(genedrop_object_summary$simulated_frequencies$Simulation,
-                             genedrop_object_summary$simulated_frequencies$Allele),
-                        cumu.func)
+  sim.changes <- genedrop_object_summary$simulated_frequencies %>%
+    group_by(Simulation, Allele) %>%
+    summarise(CumuChange = cumu.func(p))
 
-  sim.changes <- melt(sim.changes)
+  true.changes <- genedrop_object_summary$observed_frequencies %>%
+    group_by(Simulation, Allele) %>%
+    summarise(CumuChange = cumu.func(p))
 
-  true.changes <- tapply(genedrop_object_summary$observed_frequencies$p,
-                        list(genedrop_object_summary$observed_frequencies$Simulation,
-                             genedrop_object_summary$observed_frequencies$Allele),
-                        cumu.func)
-
-  true.changes <- melt(true.changes)
-
-
-
-  print(ggplot(sim.changes, aes(value)) +
+  print(ggplot(sim.changes, aes(CumuChange)) +
           geom_histogram() +
-          facet_wrap(~Var2) +
-          geom_vline(data = true.changes, aes(xintercept = value), col = obs_line_col) +
+          facet_wrap(~Allele) +
+          geom_vline(data = true.changes, aes(xintercept = CumuChange), col = obs_line_col) +
           ggtitle(paste0("Distribution of Cumulative Change: Nsim = ", max(genedrop_object_summary$simulated_frequencies$Simulation))))
 
   true.changes$Cumulative.Change.Lower <- NA
@@ -246,11 +220,11 @@ plot_genedrop_cumulative_change <- function(genedrop_object_summary,
 
   for(i in 1:nrow(true.changes)){
 
-    true.changes$Cumulative.Change.Lower [i] <- length(which(sim.changes$Var2 == true.changes$Var2[i] &
-                                                               sim.changes$value < true.changes$value[i]))
+    true.changes$Cumulative.Change.Lower [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+                                                               sim.changes$CumuChange < true.changes$CumuChange[i]))
 
-    true.changes$Cumulative.Change.Higher [i] <- length(which(sim.changes$Var2 == true.changes$Var2[i] &
-                                                                sim.changes$value > true.changes$value[i]))
+    true.changes$Cumulative.Change.Higher [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+                                                                sim.changes$CumuChange > true.changes$CumuChange[i]))
 
   }
 
