@@ -133,6 +133,7 @@ check_data <- function(id,
   } else {
 
     ped$cohort <- kindepth(ped$ID, ped$FATHER, ped$MOTHER)
+    message(paste0("No cohorts defined. kindepth2::kindepth indicates ", max(ped$cohort), " generations."))
 
   }
 
