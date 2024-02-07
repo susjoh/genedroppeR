@@ -30,16 +30,7 @@ check_data <- function(id,
     message("NAs present in cohort - these individuals will be removed.")
   }
 
-  #~~ If cohort is provided, throw error if any have no genotype information
 
-  x <- data.frame(cohort, genotype) %>%
-    group_by(cohort) %>%
-    summarise(n = length(which(!is.na(genotype))))
-
-  if(any(x$n == 0)){
-    x <- subset(x, n == 0)
-    stop(paste0("Cohorts ", paste(x$cohort, collapse = ", "), " have no genotyped individuals."))
-  }
 
   #~~ If genotype is provided, then check the locus is not monomorphic.
 
@@ -143,6 +134,18 @@ check_data <- function(id,
 
     ped$cohort <- kindepth(ped$ID, ped$FATHER, ped$MOTHER)
 
+  }
+
+  #~~ If cohort is provided, throw error if any have no genotype information
+
+
+  x9 <- data.frame(cohort = ped$cohort, genotype = ped$genotype) %>%
+    group_by(cohort) %>%
+    summarise(n = length(which(!is.na(genotype))))
+
+  if(any(x9$n == 0)){
+    x9 <- subset(x9, n == 0)
+    stop(paste0("Cohorts ", paste(x9$cohort, collapse = ", "), " have no genotyped individuals."))
   }
 
 
