@@ -15,7 +15,8 @@ check_data <- function(id,
                        mother,
                        father,
                        cohort = NULL,
-                       genotype){
+                       genotype,
+                       multiallelic = F){
 
   #~~ Check that there are no duplicate IDs.
 
@@ -29,6 +30,17 @@ check_data <- function(id,
     message("NAs present in cohort - these individuals will be removed.")
   }
 
+  #~~ If cohort is provided, remove any with no genotype information
+
+  x <- data.frame(cohort, genotype) %>%
+    group_by(cohort) %>%
+    summarise(n = length(which(!is.na(genotype))))
+
+  if(any(x$n == 0)){
+    x <- subset(x, n == 0)
+    stop(paste0("Cohorts ", paste(x$cohort, collapse = ", "), " have no genotyped individuals."))
+  }
+
   #~~ If genotype is provided, then check the locus is not monomorphic.
 
   if (!is.null(genotype) & length(table(genotype)) == 1){
@@ -37,41 +49,45 @@ check_data <- function(id,
 
   #~~ If genotype is numeric, then only accept if 0, 1, 2
 
-  if (!is.null(genotype) & is.numeric(genotype)){
+  if(multiallelic == F){
+    if (!is.null(genotype) & is.numeric(genotype)){
 
-    if (any(!na.omit(genotype) %in% 0:2)){
-      stop ("Dosage should be coded as 0, 1, 2.")
+      if (any(!na.omit(genotype) %in% 0:2)){
+        stop ("Dosage should be coded as 0, 1, 2.")
+      }
+
+      if (length(unique(genotype)) == 2){
+        message ("This dataset only has two unique genotypes. Please note that this model assumes a value of 1 is the heterozygote")
+      }
+
+    } else {
+
+      templev <- as.factor(genotype) %>% levels %>% sort
+
+      #~~ determine which value is heterozygote if templev is shorter than 3
+
+      if (length(templev) == 2){
+
+        templev2 <- sapply(templev, function(x){
+          length(unique(strsplit(x, split = "")[[1]]))
+        })
+
+        if (templev2[1] == max(templev2)){
+          templev <- c("AA", names(templev2))
+        }
+
+        if (templev2[1] == templev2[2]){
+          templev <- c(names(templev2)[1], "AB", names(templev2)[2])
+        }
+
+        rm(templev2)
+      }
+
+      genotype <- as.numeric(factor(genotype, levels = templev)) -1
+      rm(templev)
     }
-
-    if (length(unique(genotype)) == 2){
-      message ("This dataset only has two unique genotypes. Please note that this model assumes a value of 1 is the heterozygote")
-    }
-
   } else {
-
-    templev <- as.factor(genotype) %>% levels %>% sort
-
-    #~~ determine which value is heterozygote if templev is shorter than 3
-
-    if (length(templev) == 2){
-
-      templev2 <- sapply(templev, function(x){
-        length(unique(strsplit(x, split = "")[[1]]))
-      })
-
-      if (templev2[1] == max(templev2)){
-        templev <- c("AA", names(templev2))
-      }
-
-      if (templev2[1] == templev2[2]){
-        templev <- c(names(templev2)[1], "AB", names(templev2)[2])
-      }
-
-      rm(templev2)
-    }
-
-    genotype <- as.numeric(factor(genotype, levels = templev)) -1
-    rm(templev)
+    genotype <- as.character(genotype)
   }
 
   # Make a ped object.
