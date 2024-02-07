@@ -1,7 +1,7 @@
 Package: genedroppeR
 Type: Package
 Title: Gene-drop alleles through pedigrees.
-Version: 0.1.1
+Version: 0.1.2
 Author: person("Susan", "Johnston",
   email = "Susan.Johnston@ed.ac.uk",
   role = c("aut", "cre"))
