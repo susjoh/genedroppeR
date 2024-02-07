@@ -6,6 +6,20 @@
 #' @import ggplot2
 #' @export
 
+unicorn.UF <- genedrop_snp(id = unicorn$id,
+                           mother = unicorn$mother,
+                           father = unicorn$father,
+                           cohort = unicorn$cohort,
+                           genotype = unicorn$HornSNP,
+                           nsim = 1000,
+                           n_founder_cohorts = 5,
+                           fix_founders = F,
+                           verbose = T,
+                           interval = 200)
+
+genedrop_object_summary <- summary_genedrop(unicorn.UF)
+sim_alpha = 0.2
+obs_line_col = "red"
 
 plot_genedrop_results <- function(genedrop_object_summary,
                                   sim_alpha = 0.2,
