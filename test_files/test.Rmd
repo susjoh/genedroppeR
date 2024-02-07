@@ -1,0 +1,114 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r}
+library(genedroppeR)
+unicorn.summ <- summary_cohort(id = unicorn$id,
+                               mother = unicorn$mother,
+                               father = unicorn$father,
+                               cohort = unicorn$cohort,
+                               genotype = unicorn$HornSNP)
+
+unicorn.summ
+
+
+unicorn.UF <- genedrop_snp(id = unicorn$id,
+                           mother = unicorn$mother,
+                           father = unicorn$father,
+                           cohort = unicorn$cohort,
+                           genotype = unicorn$HornSNP,
+                           nsim = 1000,
+                           n_founder_cohorts = 5,
+                           fix_founders = F,
+                           verbose = T,
+                           interval = 200)
+
+unicorn.UF.summ <- summary_genedrop(unicorn.UF)
+str(unicorn.UF.summ)
+
+unicorn.UF.summ$observed_frequencies
+
+plot_genedrop_results(unicorn.UF.summ)
+
+plot_genedrop_lm_slopes(unicorn.UF.summ)
+
+plot_genedrop_cumulative_change(unicorn.UF.summ)
+
+
+unicorn.UF.resample <- genedrop_snp(id = unicorn$id,
+                           mother = unicorn$mother,
+                           father = unicorn$father,
+                           cohort = unicorn$cohort,
+                           genotype = unicorn$HornSNP,
+                           nsim = 1000,
+                           n_founder_cohorts = 5,
+                           fix_founders = F,
+                           verbose = T,
+                           interval = 200,
+                           resample_offspring = T)
+
+
+
+unicorn.UF.resample.summ <- summary_genedrop(unicorn.UF.resample)
+plot_genedrop_results(unicorn.UF.resample.summ)
+
+plot_genedrop_lm_slopes(unicorn.UF.resample.summ)
+
+plot_genedrop_cumulative_change(unicorn.UF.resample.summ)
+
+
+unicorn.UF <- genedrop_snp(id = unicorn$id,
+                           mother = unicorn$mother,
+                           father = unicorn$father,
+                           cohort = unicorn$cohort,
+                           genotype = unicorn$HornSNP,
+                           nsim = 1000,
+                           n_founder_cohorts = 5,
+                           fix_founders = T,
+                           verbose = T,
+                           interval = 200)
+
+unicorn.UF.summ <- summary_genedrop(unicorn.UF)
+str(unicorn.UF.summ)
+
+unicorn.UF.summ$observed_frequencies
+
+plot_genedrop_results(unicorn.UF.summ)
+
+plot_genedrop_lm_slopes(unicorn.UF.summ)
+
+plot_genedrop_cumulative_change(unicorn.UF.summ)
+
+
+unicorn.UF.resample <- genedrop_snp(id = unicorn$id,
+                           mother = unicorn$mother,
+                           father = unicorn$father,
+                           cohort = unicorn$cohort,
+                           genotype = unicorn$HornSNP,
+                           nsim = 1000,
+                           n_founder_cohorts = 5,
+                           fix_founders = T,
+                           verbose = T,
+                           interval = 200,
+                           resample_offspring = T)
+
+
+
+unicorn.UF.resample.summ <- summary_genedrop(unicorn.UF.resample)
+plot_genedrop_results(unicorn.UF.resample.summ)
+
+plot_genedrop_lm_slopes(unicorn.UF.resample.summ)
+
+plot_genedrop_cumulative_change(unicorn.UF.resample.summ)
+
+
+```
+
+
+
+
+
