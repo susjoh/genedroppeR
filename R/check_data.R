@@ -30,7 +30,7 @@ check_data <- function(id,
     message("NAs present in cohort - these individuals will be removed.")
   }
 
-  #~~ If cohort is provided, remove any with no genotype information
+  #~~ If cohort is provided, throw error if any have no genotype information
 
   x <- data.frame(cohort, genotype) %>%
     group_by(cohort) %>%

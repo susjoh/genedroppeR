@@ -4,7 +4,7 @@
 \alias{check_data}
 \title{Check data before gene-drop analysis.}
 \usage{
-check_data(id, mother, father, cohort = NULL, genotype)
+check_data(id, mother, father, cohort = NULL, genotype, multiallelic = F)
 }
 \arguments{
 \item{id}{vector. Individual IDs}
