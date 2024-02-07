@@ -22,9 +22,7 @@
 #'   pedigree structure as the observed pedigree is used. If TRUE, then
 #'   offspring are resampled across parents in each cohort. This is to remove
 #'   any potential signal where prolific individuals tend to have prolific
-#'   offspring.
-#' @param mutation_rate numeric. Default = NULL. If specified, then alleles
-#'   decay at the rate of mutation. This may arise e.g. when
+#'   offspring, but will also mean that pedigrees are not directly comparable.
 #' @param verbose logical. Default = TRUE. Output the progress of the run.
 #' @param interval integer. Default 100. Output progress every 100 simulations.
 #' @import dplyr
@@ -80,6 +78,13 @@ genedrop_snp <- function(id,
   if (is.null(x$`2`)) x$`2` <- 0
 
   x$p <- (x$`0` + 0.5*(x$`1`)) / x$GenoCount
+
+  # Find cohorts with no representation and throw error
+
+  badcohorts <- x$cohort[which(is.na(x[,2]))]
+  if(length(badcohorts) > 0){
+    stop(paste0("Cohorts ", paste(badcohorts, collapse = ", "), " have no genotyped individuals."))
+  }
 
   #~~ Create a list to save results
 
@@ -162,14 +167,14 @@ genedrop_snp <- function(id,
       # Mother is known
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER))
 
-      haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
+      if(length(y1) > 0)  haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
       # Father is known
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER))
 
-      haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
+      if(length(y2) > 0)  haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
@@ -209,14 +214,14 @@ genedrop_snp <- function(id,
       # Mother is known
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER))
 
-      haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
+      if(length(y1) > 0)  haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
       # Father is known
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER))
 
-      haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
+      if(length(y2) > 0)  haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
@@ -257,7 +262,7 @@ genedrop_snp <- function(id,
 
   }
 
-  sim.results <- do.call(rbind, sim.list)
+  sim.results <- bind_rows(sim.list)
 
   sim.results$Simulated.Geno <- sim.results$Mum.Allele + sim.results$Dad.Allele
 

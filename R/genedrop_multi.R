@@ -18,6 +18,11 @@
 #'   For individuals with no known genotype, their genotypes are sampled based
 #'   on the observed cohort allele frequency. If FALSE, then all IDs are sampled
 #'   based on the cohort allele frequencies.
+#' @param resample_offspring logical. Default = FALSE. If FALSE, the same
+#'   pedigree structure as the observed pedigree is used. If TRUE, then
+#'   offspring are resampled across parents in each cohort. This is to remove
+#'   any potential signal where prolific individuals tend to have prolific
+#'   offspring, but will also mean that pedigrees are not directly comparable.
 #' @param verbose logical. Output the progress of the run.
 #' @param interval int. Default 100. Output progress every 100 simulations.
 #' @import dplyr
@@ -27,98 +32,26 @@
 #' @export
 
 
-
 genedrop_multi <- function(id,
-                         mother,
-                         father,
-                         cohort = NULL,
-                         genotype,
-                         genotype_delim = '',
-                         nsim,
-                         n_founder_cohorts = 1,
-                         fix_founders = T,
-                         verbose = T,
-                         interval = 100){
+                           mother,
+                           father,
+                           cohort = NULL,
+                           genotype,
+                           genotype_delim = '',
+                           nsim,
+                           n_founder_cohorts = 1,
+                           fix_founders = T,
+                           verbose = T,
+                           interval = 100,
+                           resample_offspring = F){
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # 1. Format the data           #
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-  #~~ Check that there are no duplicate IDs.
+  ped <- check_data(id, mother, father, cohort, genotype, multiallelic = T)
 
-  if (any(as.numeric(names(table(table(id)))) > 1)){
-    stop ("Duplicated values in id")
-  }
-
-  #~~ If cohort is provided, then check there are no NA's.
-
-  if (!is.null(cohort) & any(is.na(cohort))){
-    message("NAs present in cohort - these individuals will be removed.")
-  }
-
-  #~~ If genotype is provided, then check the locus is not monomorphic.
-
-  if (!is.null(genotype) & length(table(genotype)) == 1){
-    stop ("Locus is monomorphic")
-  }
-
-  #~~ Make a ped object.
-
-  ped <- data.frame(ID     = id,
-                    MOTHER = mother,
-                    FATHER = father)
-
-  ped$MOTHER[which(ped$MOTHER == 0)] <- NA
-  ped$FATHER[which(ped$FATHER == 0)] <- NA
-
-  #~~ Add the genotype information.
-
-  if (!is.null(genotype)) ped$genotype <- as.character(genotype)
-
-  #~~ Add cohort information to ped.
-
-  if (!is.null(cohort)) {
-
-    ped$cohort <- cohort
-
-    #~~ remove anything not cohorted
-
-    ped <- subset(ped, !is.na(cohort))
-
-    #~~ Check that parents and offspring are not in the same cohort.
-
-    x <- subset(ped, select = c(ID, MOTHER, FATHER, cohort))
-
-    x1 <- subset(ped, select = c(ID, cohort))
-
-    names(x1) <- c("MOTHER", "Mum.cohort")
-    suppressMessages(x <- left_join(x, x1))
-
-    names(x1) <- c("FATHER", "Dad.cohort")
-    suppressMessages(x <- left_join(x, x1))
-
-    badids <- c(which(x$cohort == x$Mum.cohort),which(x$cohort == x$Dad.cohort))
-
-    if (length(badids) > 0){
-      print(x[badids,])
-      stop ("Some parents and offspring are in the same cohort.
-            See output for problem lines.")
-    }
-
-    rm(x, x1, badids)
-
-  } else {
-
-    ped$cohort <- kindepth(ped$ID, ped$FATHER, ped$MOTHER)
-
-
-  }
-
-  #~~ Get rid of parents that aren't in the IDs.
-
-  ped$MOTHER[which(!is.na(ped$MOTHER) & !ped$MOTHER %in% ped$ID)] <- NA
-  ped$FATHER[which(!is.na(ped$FATHER) & !ped$FATHER %in% ped$ID)] <- NA
-
+  rm(id, mother, father, cohort, genotype)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # 2. Get the observed population frequency information #
@@ -129,9 +62,9 @@ genedrop_multi <- function(id,
   y <- subset(ped, select = c(genotype, cohort))
   y$genotype <- as.character(y$genotype)
   y$Allele1 <- sapply(y$genotype, function(foo)
-                      strsplit(foo, split = genotype_delim, fixed = T)[[1]][1])
+    strsplit(foo, split = genotype_delim, fixed = T)[[1]][1])
   y$Allele2 <- sapply(y$genotype, function(foo)
-                      strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
+    strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
 
   y <- melt(y, id.vars = c("genotype", "cohort"))
   head(y)
@@ -148,6 +81,7 @@ genedrop_multi <- function(id,
   x$FullCount <- rowSums(x[,2:(ncol(x)-1)])
 
   for(i in x.allele) x[,i] <- x[,i]/x$GenoCount
+
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # 3. Sample the genotypes in the founder cohorts     #
@@ -187,6 +121,9 @@ genedrop_multi <- function(id,
 
   #~~ Create a list to save results
 
+  ped.hold <- ped
+
+
   sim.list <- list()
 
   for(simulation in 1:nsim){
@@ -195,6 +132,12 @@ genedrop_multi <- function(id,
       if (simulation %in% seq(1, nsim, interval)){
         message(paste0("Running simulation ", simulation, " of ", nsim, "."))
       }
+    }
+
+    if(resample_offspring){
+      ped <- resample_offspring_func(ped.hold)
+    } else {
+      ped <- ped.hold
     }
 
     #~~ Create a data frame with space for the results
@@ -207,23 +150,23 @@ genedrop_multi <- function(id,
 
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER) & !haplo.frame$ID %in% fixed_founders)
 
-      haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
+      if(length(y1) > 0) haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER) & !haplo.frame$ID %in% fixed_founders)
 
-      haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
+      if(length(y2) > 0) haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Mum.Allele))
 
-      haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+      if(length(y3) > 0) haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
 
       y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Dad.Allele))
 
-      haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+      if(length(y4) > 0) haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
 
       rm(y1, y2, y3, y4)
 
@@ -235,13 +178,13 @@ genedrop_multi <- function(id,
 
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER))
 
-      haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
+      if(length(y1) > 0) haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER))
 
-      haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
+      if(length(y2) > 0) haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
                                           1,
                                           function(y) y[((runif (1) > 0.5) + 1L)])
 
@@ -253,11 +196,11 @@ genedrop_multi <- function(id,
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$MOTHER))
 
-      haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
+      if(length(y3) > 0)  haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
 
       y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$FATHER))
 
-      haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
+      if(length(y4) > 0) haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
 
       rm(y1, y2, y3, y4)
     }

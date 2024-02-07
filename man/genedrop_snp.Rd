@@ -51,10 +51,7 @@ sampled based on the cohort allele frequencies.}
 pedigree structure as the observed pedigree is used. If TRUE, then
 offspring are resampled across parents in each cohort. This is to remove
 any potential signal where prolific individuals tend to have prolific
-offspring.}
-
-\item{mutation_rate}{numeric. Default = NULL. If specified, then alleles
-decay at the rate of mutation. This may arise e.g. when}
+offspring, but will also mean that pedigrees are not directly comparable.}
 }
 \description{
 Conduct a single Gene-Drop Simulation for a biallelic locus.

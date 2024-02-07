@@ -15,7 +15,8 @@ genedrop_multi(
   n_founder_cohorts = 1,
   fix_founders = T,
   verbose = T,
-  interval = 100
+  interval = 100,
+  resample_offspring = F
 )
 }
 \arguments{
@@ -47,6 +48,12 @@ based on the cohort allele frequencies.}
 \item{verbose}{logical. Output the progress of the run.}
 
 \item{interval}{int. Default 100. Output progress every 100 simulations.}
+
+\item{resample_offspring}{logical. Default = FALSE. If FALSE, the same
+pedigree structure as the observed pedigree is used. If TRUE, then
+offspring are resampled across parents in each cohort. This is to remove
+any potential signal where prolific individuals tend to have prolific
+offspring, but will also mean that pedigrees are not directly comparable.}
 }
 \description{
 Conduct a single Gene-Drop Simulation for a multi-allelic locus.

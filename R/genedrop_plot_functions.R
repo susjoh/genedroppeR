@@ -1,13 +1,10 @@
 #' Plot a summary graph of Gene-Drop Simulations.
 #'
-#' Plot a summary graph of Gene-Drop Simulations.
-#'
 #' @param genedrop_object_summary Gene-Drop summary object from the function `summary_genedrop()`
 #' @param sim_alpha alpha (transparency) value for plotted points
 #' @param obs_line_col line colour to use for the observed data.
 #' @import ggplot2
 #' @export
-
 
 
 plot_genedrop_results <- function(genedrop_object_summary,
