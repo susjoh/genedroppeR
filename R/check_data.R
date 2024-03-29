@@ -8,6 +8,9 @@
 #' @param cohort vector (optional). Cohort number (e.g. birth year)
 #'   corresponding to the id.
 #' @param genotype vector. Genotypes corresponding to id.
+#' @param sex vector. Sexes corresponding to id. 1 is the homogametic sex (e.g. XY, ZW) and 2 is the heterogametic sex (e.g. XX, ZZ)
+#' @param sex_system character. "XY" or "ZW" sex determining system. Default is sex_system = "XY"
+#' @param multiallelic boolean. Default = FALSE
 #' @import dplyr
 #' @export
 
@@ -16,6 +19,8 @@ check_data <- function(id,
                        father,
                        cohort = NULL,
                        genotype,
+                       sex = NULL,
+                       sex_system = "XY",
                        multiallelic = F){
 
   #~~ Check that there are no duplicate IDs.
@@ -139,7 +144,6 @@ check_data <- function(id,
 
   #~~ If cohort is provided, throw error if any have no genotype information
 
-
   x9 <- data.frame(cohort = ped$cohort, genotype = ped$genotype) %>%
     group_by(cohort) %>%
     summarise(n = length(which(!is.na(genotype))))
@@ -154,6 +158,26 @@ check_data <- function(id,
 
   ped$MOTHER[which(!is.na(ped$MOTHER) & !ped$MOTHER %in% ped$ID)] <- NA
   ped$FATHER[which(!is.na(ped$FATHER) & !ped$FATHER %in% ped$ID)] <- NA
+
+  #~~ Check all the sexes are okay
+
+  if(!is.null(sex)){
+    ped$sex <- sex
+
+    if(sex_system == "XY"){
+      message("Assuming XY system: males = 1, females = 2")
+      if(any(ped$sex == 2 & ped$ID %in% ped$FATHER)) stop("Some mothers have sex = 1. Please check your sex designations.")
+      if(any(ped$sex == 1 & ped$ID %in% ped$MOTHER)) stop("Some fathers have sex = 2. Please check your sex designations.")
+
+    }
+
+    if(sex_system == "ZW"){
+      message("Assuming ZW system: females = 1, males = 2")
+      if(any(ped$sex == 1 & ped$ID %in% ped$FATHER)) stop("Some fathers have sex = 2. Please check your sex designations.")
+      if(any(ped$sex == 2 & ped$ID %in% ped$MOTHER)) stop("Some mothers have sex = 1. Please check your sex designations.")
+
+    }
+  }
 
 
   return(ped)
