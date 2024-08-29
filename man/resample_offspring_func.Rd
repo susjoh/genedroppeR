@@ -15,5 +15,7 @@ criticism of the genedrop method, that the pedigree is a product of fitness
 (i.e. "fitter" parents may have "fitter" offspring). This function reassigns
 offspring to each breeding parent within a cohort. This will preserve the
 distribution of offspring in mothers and fathers. At present, non-breeding
-individuals are not sampled as parents.
+individuals are not sampled as parents. BE AWARE: using this function means
+that a direct comparison to the true pedigree is no longer possible - it is
+up to the user to make a philosophical choice on what to do.
 }

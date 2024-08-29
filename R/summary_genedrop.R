@@ -1,14 +1,45 @@
+
+#' Generic summary functions for class "genedroppeR" and "genedroppeR_cohort"
+#'
+#' @exportS3Method base::summary
+
+summary.genedroppeR <- function(genedrop_obj){
+  cat("\n")
+  cat("*** Summary: genedroppeR analysis ***")
+  cat("\n\n")
+  cat(paste0("Model parameters: cohorts = ", length(unique(genedrop_obj$observed_frequencies$Cohort)),
+             ", Simulations = ", max(genedrop_obj$simulated_frequencies$Simulation),
+             ", Founder cohorts = ", genedrop_obj$n_founder_cohorts, "."))
+  cat("\n")
+  cat(paste0("Founder genotypes ", ifelse(genedrop_obj$fix_founders, "fixed", "not fixed"),
+             ", Offspring ", ifelse(genedrop_obj$resample_offspring, "resampled", "not resampled"), "."))
+  cat("\n")
+  cat(paste0("Founder cohorts ", ifelse(genedrop_obj$remove_founders, "have been removed from the below analyses (Default).",
+                                        "have not been removed from the below analyses.")))
+  cat("\n\n")
+  data.frame(genedrop_obj$results)
+
+}
+
+#' @exportS3Method base::summary
+
+
+summary.genedroppeR_cohort <- function(cohort_obj){
+  class(cohort_obj) <- NULL
+  data.frame(cohort_obj)
+}
+
+
+
 #' Summarise allele frequencies from a genedrop object.
 #'
-#' Summarise observed and simulated allele frequencies by simulation and cohort for a genedrop object.
+#' Summarise observed and simulated allele frequencies by simulation and cohort
+#' for a genedrop object. This is only called within specific functions and is
+#' not for general use.
 #'
-#' @param genedrop_object Output from genedrop_snp() or genedrop_multi()
+#' @param genedrop_object Output from `genedrop_snp()` or `genedrop_multi()`
 #' @param genotype_delim char. Default = ''. Delimiter character for genotypes.
-#' @import dplyr
-#' @import kinship2
-#' @import magrittr
 #' @export
-
 
 
 
@@ -37,9 +68,6 @@ summary_genedrop <- function(genedrop_object, genotype_delim = ''){
     x3$Simulation <- 0
     x3$Cohort <- as.numeric(row.names(x3))
     x3$Sum <- NULL
-
-    head(x1)
-    head(x3)
 
     x3 <- x3[,c("Cohort", "Simulation", "Count", "p")]
 

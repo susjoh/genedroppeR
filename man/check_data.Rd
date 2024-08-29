@@ -2,22 +2,40 @@
 % Please edit documentation in R/check_data.R
 \name{check_data}
 \alias{check_data}
-\title{Check data before gene-drop analysis.}
+\title{`check_data()`: Check data formatting before genedrop analysis.}
 \usage{
-check_data(id, mother, father, cohort = NULL, genotype, multiallelic = F)
+check_data(
+  id,
+  mother,
+  father,
+  cohort = NULL,
+  genotype,
+  sex = NULL,
+  multiallelic = F
+)
 }
 \arguments{
 \item{id}{vector. Individual IDs}
 
-\item{mother}{vector. Maternal IDs corresponding to id.}
+\item{mother}{vector. Maternal IDs corresponding to id. Missing values should
+be 0 or NA.}
 
-\item{father}{vector. Paternal IDs corresponding to id.}
+\item{father}{vector. Paternal IDs corresponding to id. Missing values should
+be 0 or NA.}
 
 \item{cohort}{vector (optional). Cohort number (e.g. birth year)
 corresponding to the id.}
 
 \item{genotype}{vector. Genotypes corresponding to id.}
+
+\item{sex}{vector (optional). Sexes corresponding to id. 1 is the homogametic
+sex (e.g. XY, ZW) and 2 is the heterogametic sex (e.g. XX, ZZ). Specifying
+`sex` will force strict correspondence to maternal and paternal links. This
+vector only needs to be specified for simulations on sex-linked SNPs.}
+
+\item{multiallelic}{boolean. Default = FALSE}
 }
 \description{
-Check data before gene-drop analysis.
+This function is used within `genedrop_...` functions to check and format the
+data for downstream genedrop analysis.
 }

@@ -143,9 +143,11 @@ summary_cohort <- function(id,
 
   suppressMessages(ped2 <- left_join(ped2, x1))
 
-  ped2$cohort[ped2$cohort == "missing"] <- NA
-  ped2$cohort <- as.numeric(as.character(ped2$cohort))
+  #ped2$cohort[ped2$cohort == "missing"] <- NA
+  #ped2$cohort <- as.numeric(as.character(ped2$cohort))
 
-  return(ped2)
+  class(ped2) <- "genedroppeR_cohort"
+
+  ped2
 
 }

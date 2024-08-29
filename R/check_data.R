@@ -1,15 +1,20 @@
-#' Check data before gene-drop analysis.
+#' `check_data()`: Check data formatting before genedrop analysis.
 #'
-#' Check data before gene-drop analysis.
+#' This function is used within `genedrop_...` functions to check and format the
+#' data for downstream genedrop analysis.
 #'
 #' @param id vector. Individual IDs
-#' @param mother vector. Maternal IDs corresponding to id.
-#' @param father vector. Paternal IDs corresponding to id.
+#' @param mother vector. Maternal IDs corresponding to id. Missing values should
+#'   be 0 or NA.
+#' @param father vector. Paternal IDs corresponding to id. Missing values should
+#'   be 0 or NA.
 #' @param cohort vector (optional). Cohort number (e.g. birth year)
 #'   corresponding to the id.
 #' @param genotype vector. Genotypes corresponding to id.
-#' @param sex vector. Sexes corresponding to id. 1 is the homogametic sex (e.g. XY, ZW) and 2 is the heterogametic sex (e.g. XX, ZZ)
-#' @param sex_system character. "XY" or "ZW" sex determining system. Default is sex_system = "XY"
+#' @param sex vector (optional). Sexes corresponding to id. 1 is the homogametic
+#'   sex (e.g. XY, ZW) and 2 is the heterogametic sex (e.g. XX, ZZ). Specifying
+#'   `sex` will force strict correspondence to maternal and paternal links. This
+#'   vector only needs to be specified for simulations on sex-linked SNPs.
 #' @param multiallelic boolean. Default = FALSE
 #' @import dplyr
 #' @export
@@ -20,30 +25,27 @@ check_data <- function(id,
                        cohort = NULL,
                        genotype,
                        sex = NULL,
-                       sex_system = "XY",
                        multiallelic = F){
 
-  #~~ Check that there are no duplicate IDs.
+  # Check that there are no duplicate IDs.
 
   if (any(as.numeric(names(table(table(id)))) > 1)){
     stop ("Duplicate values in id")
   }
 
-  #~~ If cohort is provided, then check there are no NA's.
+  # If cohort is provided, then check there are no NA's.
 
   if (!is.null(cohort) & any(is.na(cohort))){
     message("NAs present in cohort - these individuals will be removed.")
   }
 
-
-
-  #~~ If genotype is provided, then check the locus is not monomorphic.
+  # If genotype is provided, then check the locus is not monomorphic.
 
   if (!is.null(genotype) & length(table(genotype)) == 1){
     stop ("Locus is monomorphic")
   }
 
-  #~~ If genotype is numeric, then only accept if 0, 1, 2
+  # If genotype is numeric, then only accept if 0, 1, 2
 
   if(multiallelic == F){
     if (!is.null(genotype) & is.numeric(genotype)){
@@ -60,7 +62,7 @@ check_data <- function(id,
 
       templev <- as.factor(genotype) %>% levels %>% sort
 
-      #~~ determine which value is heterozygote if templev is shorter than 3
+      # determine which value is heterozygote if templev is shorter than 3
 
       if (length(templev) == 2){
 
@@ -95,25 +97,28 @@ check_data <- function(id,
   ped$MOTHER[which(ped$MOTHER == 0)] <- NA
   ped$FATHER[which(ped$FATHER == 0)] <- NA
 
-  #~~ Add the genotype information.
+  # Add the genotype information.
 
   if (!is.null(genotype)) ped$genotype <- genotype
 
-  #~~ Add cohort information to ped.
+  # Add the sex information.
+
+  if (!is.null(sex)) ped$sex <- sex
+
+  # Add cohort information to ped.
 
   if (!is.null(cohort)) {
 
     ped$cohort <- cohort
 
-    #~~ remove anything not cohorted
+    # remove anything not cohorted
 
     if(length(which(is.na(cohort))) > 0){
       message(paste0("Removed ", length(which(is.na(cohort))), " ids with no cohort information."))
     }
     ped <- subset(ped, !is.na(cohort))
 
-
-    #~~ Check that parents and offspring are not in the same cohort.
+    # Check that parents and offspring are not in the same cohort.
 
     x <- subset(ped, select = c(ID, MOTHER, FATHER, cohort))
 
@@ -138,11 +143,11 @@ check_data <- function(id,
   } else {
 
     ped$cohort <- kindepth(ped$ID, ped$FATHER, ped$MOTHER)
-    message(paste0("No cohorts defined. kindepth2::kindepth indicates ", max(ped$cohort), " generations."))
+    message(paste0("No cohorts defined - cohorts determined based on pedigree depth. There are ", max(ped$cohort)+1, " generations."))
 
   }
 
-  #~~ If cohort is provided, throw error if any have no genotype information
+  # If cohort is provided, throw error if any have no genotype information
 
   x9 <- data.frame(cohort = ped$cohort, genotype = ped$genotype) %>%
     group_by(cohort) %>%
@@ -153,32 +158,34 @@ check_data <- function(id,
     stop(paste0("Cohorts ", paste(x9$cohort, collapse = ", "), " have no genotyped individuals."))
   }
 
-
-  #~~ Get rid of parents that aren't in the IDs.
+  # Blank out parents that aren't in the IDs (no genotype information).
 
   ped$MOTHER[which(!is.na(ped$MOTHER) & !ped$MOTHER %in% ped$ID)] <- NA
   ped$FATHER[which(!is.na(ped$FATHER) & !ped$FATHER %in% ped$ID)] <- NA
 
-  #~~ Check all the sexes are okay
+  # Check all the sexes are okay re: heterogametic sex
 
   if(!is.null(sex)){
-    ped$sex <- sex
 
-    if(sex_system == "XY"){
-      message("Assuming XY system: males = 1, females = 2")
-      if(any(ped$sex == 2 & ped$ID %in% ped$FATHER)) stop("Some mothers have sex = 1. Please check your sex designations.")
-      if(any(ped$sex == 1 & ped$ID %in% ped$MOTHER)) stop("Some fathers have sex = 2. Please check your sex designations.")
-
+    if(any(is.na(ped$sex))){
+      stop("NA values in sex - t.")
     }
 
-    if(sex_system == "ZW"){
-      message("Assuming ZW system: females = 1, males = 2")
-      if(any(ped$sex == 1 & ped$ID %in% ped$FATHER)) stop("Some fathers have sex = 2. Please check your sex designations.")
-      if(any(ped$sex == 2 & ped$ID %in% ped$MOTHER)) stop("Some mothers have sex = 1. Please check your sex designations.")
-
+    if(length(unique(ped$sex[which(ped$ID %in% ped$MOTHER)])) > 1){
+      stop("Some mothers have been assigned as males - please check sex designations.")
     }
+
+    if(length(unique(ped$sex[which(ped$ID %in% ped$FATHER)])) > 1){
+      stop("Some fathers have been assigned as females - please check sex designations.")
+    }
+
+    if(any(ped$ID[which(ped$sex == 1)] %in% ped$MOTHER) || any(ped$ID[which(ped$sex == 2)] %in% ped$FATHER)){
+      message("Sex-linked models will assume a ZW system")
+    } else {
+      message("Sex-linked models will assume a XY system")
+    }
+
   }
 
-
-  return(ped)
+  ped
 }

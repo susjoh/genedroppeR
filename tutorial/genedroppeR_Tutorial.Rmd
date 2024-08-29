@@ -3,7 +3,7 @@ output:
   html_document: default
   pdf_document: default
 ---
-# `genedropper`: conduct a gene-drop analysis through a pedigree.
+# `genedroppeR`: conduct single-locus gene-drop analyses through pedigrees.
 ### Susan Johnston, May 2019
 ### Updated Sep 2023
 
