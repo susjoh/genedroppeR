@@ -8,24 +8,24 @@
 ## `unicorn`
 \describe{
   \item{id}{Individual IDs}
-  \item{father}{Father IDs}
   \item{mother}{Mother IDs}
+  \item{father}{Father IDs}
   \item{cohort}{Cohort identifiers (e.g. year of birth)}
-  \item{cohort}{Sex (1 = heterogametic sex, 2 = homogametic sex)}
-  \item{HornSNP}{A biallelic locus for horn length}
+  \item{sex}{Sex (1 = heterogametic sex, 2 = homogametic sex)}
+  \item{Horns}{A biallelic locus for horn length}
   \item{MHC}{A multi-allelic locus for the magic histocompatibility locus}
-  \item{ColourSNP}{A biallelic locus underpinning a rare glitter coat polymorphism}
-  \item{SexLinkedGeno}{A biallelic, sex-linked locus.}
+  \item{Glitter}{A biallelic locus underpinning a rare glitter coat polymorphism}
+  \item{Xlinked}{A biallelic, sex-linked locus.}
 }
 }
 \usage{
 unicorn
 }
 \description{
-This dataset is from a long-term study of unicorns on the
-island of Áiteigin in Scotland. They have been genotyped for three
-loci: HornSNP, a biallelic locus for horn length; MHC, which characterises
-multi-allelic variation at the Magic Histocompatibility Locus; and ColourSNP,
-a SNP responsible for a rare glitter coat polymorphism.
+This dataset is from a long-term study of unicorns on the island of Áiteigin
+in Scotland. They have been genotyped for four loci: HornSNP, a biallelic
+locus for horn length; MHC, which characterises multi-allelic variation at
+the Magic Histocompatibility Locus; Glitter, a SNP responsible for a rare
+glitter coat polymorphism; and Xlinked, an X chromosome locus.
 }
 \keyword{dataset}

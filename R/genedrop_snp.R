@@ -44,7 +44,7 @@
 #'                              mother = unicorn$mother,
 #'                              father = unicorn$father,
 #'                              cohort = unicorn$cohort,
-#'                              genotype = unicorn$HornSNP,
+#'                              genotype = unicorn$Horns,
 #'                              nsim = 10,
 #'                              n_founder_cohorts = 4,
 #'                              fix_founders = TRUE,
@@ -279,7 +279,7 @@ genedrop_snp <- function(id,
 
   if(!is.null(return_full_results)) return_full_results <- sim.results
 
-  genedrop_obj <- summarise_genedrop(sim.results)
+  genedrop_obj <- process_genedrop(sim.results)
 
   # Calculate selection
 

@@ -31,13 +31,19 @@ check_data <- function(id,
 
   ID = MOTHER = FATHER = NULL
 
+  #
+
   # Check that there are no duplicate IDs.
 
   if (any(as.numeric(names(table(table(id)))) > 1)){
     stop ("Duplicate values in id")
   }
 
-  # If cohort is provided, then check there are no NA's.
+  # If cohort is provided, then check there are no NA's and that it is an integer
+
+  if (!is.null(cohort) & !is.integer(cohort)){
+    stop("Cohort must be an integer")
+  }
 
   if (!is.null(cohort) & any(is.na(cohort))){
     message("NAs present in cohort - these individuals will be removed.")
@@ -94,9 +100,9 @@ check_data <- function(id,
 
   # Make a ped object.
 
-  ped <- data.frame(ID     = id,
-                    MOTHER = mother,
-                    FATHER = father)
+  ped <- data.frame(ID     = as.character(id),
+                    MOTHER = as.character(mother),
+                    FATHER = as.character(father))
 
   ped$MOTHER[which(ped$MOTHER == 0)] <- NA
   ped$FATHER[which(ped$FATHER == 0)] <- NA
@@ -172,7 +178,7 @@ check_data <- function(id,
   if(!is.null(sex)){
 
     if(any(is.na(ped$sex))){
-      stop("NA values in sex - t.")
+      stop("NA values in sex - sex must be specified for sex-linked loci.")
     }
 
     if(length(unique(ped$sex[which(ped$ID %in% ped$MOTHER)])) > 1){

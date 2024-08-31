@@ -39,6 +39,6 @@ x <- summary_cohort(id = unicorn$id,
                     mother = unicorn$mother,
                     father = unicorn$father,
                     cohort = unicorn$cohort,
-                    genotype = unicorn$HornSNP)
+                    genotype = unicorn$Horns)
 
 }

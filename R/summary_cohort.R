@@ -18,7 +18,7 @@
 #'                     mother = unicorn$mother,
 #'                     father = unicorn$father,
 #'                     cohort = unicorn$cohort,
-#'                     genotype = unicorn$HornSNP)
+#'                     genotype = unicorn$Horns)
 #'
 #' @export
 
@@ -41,6 +41,7 @@ summary_cohort <- function(id,
   if (!is.null(genotype) & length(table(genotype)) == 1){
     stop("Locus is monomorphic")
   }
+
 
   #~~ If genotype is numeric, then only accept if 0, 1, 2
 
@@ -150,8 +151,6 @@ summary_cohort <- function(id,
 
   #ped2$cohort[ped2$cohort == "missing"] <- NA
   #ped2$cohort <- as.numeric(as.character(ped2$cohort))
-
-  class(ped2) <- "genedroppeR_cohort"
 
   ped2
 

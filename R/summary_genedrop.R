@@ -1,10 +1,9 @@
 #' Generic summary function for class "genedroppeR"
 #'
 #' @param genedrop_obj An object of class "genedroppeR" as output by functions `genedrop_...()`.
-#' @param ... Further arguments to be passed
-#' @exportS3Method base::summary
+#' @export
 
-summary.genedroppeR <- function(genedrop_obj, ...){
+summary_genedrop <- function(genedrop_obj){
   cat("\n")
   cat("*** Summary: genedroppeR analysis ***")
   cat("\n\n")
@@ -22,19 +21,9 @@ summary.genedroppeR <- function(genedrop_obj, ...){
 
 }
 
-#' Generic summary function for class "genedroppeR_cohort"
-#' @param cohort_obj An object of class "cohort_obj" as output by
-#'   function `summary_cohort()`.
-#' @param ... Further arguments to be passed
-#' @exportS3Method base::summary
-
-summary.genedroppeR_cohort <- function(cohort_obj, ...){
-  class(cohort_obj) <- NULL
-  data.frame(cohort_obj)
-}
 
 
-#' Summarise allele frequencies from a genedrop object.
+#' Summarise allele frequencies within a genedrop object.
 #'
 #' Summarise observed and simulated allele frequencies by simulation and cohort
 #' for a genedrop object. This is only called within specific functions and is
@@ -46,9 +35,10 @@ summary.genedroppeR_cohort <- function(cohort_obj, ...){
 #' @export
 
 
-summarise_genedrop <- function(genedrop_obj, genotype_delim = ''){
+process_genedrop <- function(genedrop_obj,
+                             genotype_delim = ''){
 
-  True.Geno = Simulation = cohort = NULL
+  True.Geno = Simulation = cohort  = NULL
 
   genedrop_obj <- filter(genedrop_obj, !is.na(True.Geno))
 

@@ -1,4 +1,4 @@
-#' Plot a summary graph of Gene-Drop Simulations.
+#' `plot_genedrop()`: Plot a summary graph of Gene-Drop Simulations.
 #'
 #' @param genedrop_obj Gene-Drop object
 #' @param analysis_to_plot Default = "all". Options are "frequency",
@@ -10,14 +10,13 @@
 #' @param sim_alpha Default = 0.3. Alpha (transparency) value for plotted lines.
 #' @param obs_line_col Default = "red". Line colour to use for the observed
 #'   data.
-#' @param ... Further arguments to be passed
-#' @exportS3Method base::plot
+#' @export
 #'
 
-plot.genedroppeR <- function(genedrop_obj,
+plot_genedrop <- function(genedrop_obj,
                              analysis_to_plot = "all",
                              sim_alpha = 0.3,
-                             obs_line_col = "red", ...){
+                             obs_line_col = "red"){
 
   Cohort = Simulation = p = Estimate = NULL
 
@@ -28,7 +27,7 @@ plot.genedroppeR <- function(genedrop_obj,
     geom_line(alpha = sim_alpha) +
     geom_line(data = genedrop_obj$observed_frequencies, aes(Cohort, p), col = obs_line_col) +
     theme_bw() +
-    geom_vline(xintercept = genedrop_obj$n_founder_cohorts+0.5, linetype= "dashed") +
+    geom_vline(xintercept = min(genedrop_obj$observed_frequencies$Cohort)+genedrop_obj$n_founder_cohorts-0.5, linetype= "dashed") +
     ggtitle(paste0("Allele Frequency Changes: Nsim = ", max(genedrop_obj$simulated_frequencies$Simulation))) +
     facet_wrap(~Allele)
 
@@ -71,14 +70,19 @@ plot.genedroppeR <- function(genedrop_obj,
 
 }
 
-#' @exportS3Method base::plot
+#' `plot_genedrop_cohort()`: Plot a summary graph of Gene-Drop Simulations.
+#'
+#' @param cohort_obj data.frame created by `summary_cohort()`
+#' @export
+#'
 
 
-plot.genedroppeR_cohort <- function(cohort_obj, ...){
+
+plot_genedrop_cohort <- function(cohort_obj){
 
   cohort = PropFounders = PropGenotyped = variable = value = NULL
 
-  x <- summary(cohort_obj)
+  x <- cohort_obj
   x <- subset(x, cohort != "missing")
   x$cohort <- as.numeric(as.character(x$cohort))
 
