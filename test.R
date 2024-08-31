@@ -2,17 +2,17 @@
 library(genedroppeR)
 library(dplyr)
 
-data(mhc)
+data(unicorn)
 
 
 #
-id = mhc$id
-mother = mhc$mother
-father = mhc$father
-cohort = mhc$cohort
-genotype = mhc$Glitter
+id = unicorn$id
+mother = unicorn$mother
+father = unicorn$father
+cohort = unicorn$cohort
+genotype = unicorn$MHC
+genotype_delim = ""
 nsim = 100
-sex = mhc$sex
 n_founder_cohorts = 1
 fix_founders = T
 verbose = T
@@ -20,8 +20,7 @@ interval = 10
 resample_offspring = F
 return_full_results = NULL
 remove_founders = TRUE
-genotype_delim = ""
-multiallelic = F
+multiallelic = T
 
 
 # library(dplyr)
@@ -30,20 +29,22 @@ multiallelic = F
 
 data(unicorn)
 
-x <- summary_cohort(id = mhc$id,
-               mother = mhc$mother,
-               father = mhc$father,
-               cohort = mhc$cohort,
-               genotype = mhc$Xlinked)
+unicorn <- subset(unicorn, cohort < 2010)
+
+x <- summary_cohort(id = unicorn$id,
+               mother = unicorn$mother,
+               father = unicorn$father,
+               cohort = unicorn$cohort,
+               genotype = unicorn$MHC)
 
 plot_genedrop_cohort(x)
 
 
-genedrop_obj <- genedrop_snp(id = mhc$id,
-                  mother = mhc$mother,
-                  father = mhc$father,
-                  cohort = mhc$cohort,
-                  genotype = mhc$Xlinked,
+genedrop_obj <- genedrop_multi(id = unicorn$id,
+                  mother = unicorn$mother,
+                  father = unicorn$father,
+                  cohort = unicorn$cohort,
+                  genotype = unicorn$MHC,
                   nsim = 100,
                   n_founder_cohorts = 4,
                   fix_founders = T,

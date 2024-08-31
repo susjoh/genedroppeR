@@ -57,9 +57,10 @@ offspring, but will also mean that pedigrees are not directly comparable.
 See the package documentation for detailed discussion on making this
 decision.}
 
-\item{remove_founders}{FILL IN}
+\item{remove_founders}{Default = TRUE. If TRUE, then the founder cohorts will
+be removed from calculations of directional and cumulative change.}
 
-\item{return_full_results}{Default = NULL This will also output tables
+\item{return_full_results}{Default = NULL. This will also output tables
 of all individually simulated genotypes.}
 }
 \description{

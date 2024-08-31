@@ -16,7 +16,9 @@ genedrop_multi(
   fix_founders = TRUE,
   verbose = TRUE,
   interval = 100,
-  resample_offspring = F
+  resample_offspring = FALSE,
+  remove_founders = TRUE,
+  return_full_results = NULL
 )
 }
 \arguments{
@@ -54,6 +56,12 @@ pedigree structure as the observed pedigree is used. If TRUE, then
 offspring are resampled across parents in each cohort. This is to remove
 any potential signal where prolific individuals tend to have prolific
 offspring, but will also mean that pedigrees are not directly comparable.}
+
+\item{remove_founders}{Default = TRUE. If TRUE, then the founder cohorts will
+be removed from calculations of directional and cumulative change.}
+
+\item{return_full_results}{Default = NULL. This will also output tables
+of all individually simulated genotypes.}
 }
 \description{
 Conduct a single Gene-Drop Simulation for a multi-allelic locus.

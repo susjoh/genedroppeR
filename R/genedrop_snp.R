@@ -33,8 +33,9 @@
 #'   offspring, but will also mean that pedigrees are not directly comparable.
 #'   See the package documentation for detailed discussion on making this
 #'   decision.
-#' @param remove_founders FILL IN
-#' @param return_full_results Default = NULL This will also output tables
+#' @param remove_founders Default = TRUE. If TRUE, then the founder cohorts will
+#'   be removed from calculations of directional and cumulative change.
+#' @param return_full_results Default = NULL. This will also output tables
 #'   of all individually simulated genotypes.
 #' @param verbose logical. Default = TRUE. Output the progress of the run.
 #' @param interval integer. Default 100. Output progress every 100 simulations.

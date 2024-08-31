@@ -25,6 +25,10 @@
 #'   offspring, but will also mean that pedigrees are not directly comparable.
 #' @param verbose logical. Output the progress of the run.
 #' @param interval int. Default 100. Output progress every 100 simulations.
+#' @param remove_founders Default = TRUE. If TRUE, then the founder cohorts will
+#'   be removed from calculations of directional and cumulative change.
+#' @param return_full_results Default = NULL. This will also output tables
+#'   of all individually simulated genotypes.
 #' @export
 
 
@@ -39,7 +43,9 @@ genedrop_multi <- function(id,
                            fix_founders = TRUE,
                            verbose = TRUE,
                            interval = 100,
-                           resample_offspring = F){
+                           resample_offspring = FALSE,
+                           remove_founders = TRUE,
+                           return_full_results = NULL){
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # 1. Format the data           #
@@ -211,11 +217,136 @@ genedrop_multi <- function(id,
 
   }
 
-  sim.results <- do.call(rbind, sim.list)
+  sim.results <- bind_rows(sim.list)
 
   sim.results$Simulated.Geno <- paste0(sim.results$Mum.Allele, genotype_delim, sim.results$Dad.Allele)
 
   names(sim.results)[names(sim.results) == "genotype"] <- "True.Geno"
+
+  if(!is.null(return_full_results)) return_full_results <- sim.results
+
+  genedrop_obj <- process_genedrop(sim.results)
+
+  # Calculate selection
+
+  genedrop_obj$simulated_frequencies$Simulation <- as.numeric(as.character(genedrop_obj$simulated_frequencies$Simulation))
+  genedrop_obj$simulated_frequencies$Cohort <- as.numeric(as.character(genedrop_obj$simulated_frequencies$Cohort))
+
+  genedrop_obj$observed_frequencies$Simulation <- as.numeric(as.character(genedrop_obj$observed_frequencies$Simulation))
+  genedrop_obj$observed_frequencies$Cohort <- as.numeric(as.character(genedrop_obj$observed_frequencies$Cohort))
+
+  sim_freq_hold <- genedrop_obj$simulated_frequencies
+  obs_freq_hold <- genedrop_obj$observed_frequencies
+
+  if(remove_founders){
+    if(length(n_founder_cohorts) == 1){
+
+      genedrop_obj$simulated_frequencies <-
+        filter(genedrop_obj$simulated_frequencies,
+               !Cohort %in% unique(sort(genedrop_obj$simulated_frequencies$Cohort))[1:n_founder_cohorts])
+
+      genedrop_obj$observed_frequencies <-
+        filter(genedrop_obj$observed_frequencies,
+               !Cohort %in% unique(sort(genedrop_obj$observed_frequencies$Cohort))[1:n_founder_cohorts])
+
+    }
+  }
+
+  if("Allele" %in% names(genedrop_obj$simulated_frequencies)){
+
+    Allele = unique(genedrop_obj$simulated_frequencies$Allele)
+
+  } else {
+
+    sim_freq_hold$Allele <- "p"
+    obs_freq_hold$Allele <- "p"
+
+    genedrop_obj$simulated_frequencies$Allele <- "p"
+    genedrop_obj$observed_frequencies$Allele <- "p"
+  }
+
+  suppressMessages({
+
+    sim.slopes <- genedrop_obj$simulated_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = lm(p ~ Cohort)$coefficients[[2]])
+
+    true.slopes <- genedrop_obj$observed_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = lm(p ~ Cohort)$coefficients[[2]])
+
+    cumu.func <- function(x){
+      x <- diff(x)
+      x <- ifelse(x < 0, x * -1, x)
+      sum(x, na.rm = F)
+    }
+
+    sim.changes <- genedrop_obj$simulated_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = cumu.func(p))
+
+    true.changes <- genedrop_obj$observed_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = cumu.func(p))
+
+  })
+
+  true.slopes$Estimates.Lower <- NA
+  true.slopes$Estimates.Higher <- NA
+
+  for(i in 1:nrow(true.slopes)){
+
+    true.slopes$Estimates.Lower [i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
+                                                      sim.slopes$Estimate < true.slopes$Estimate[i]))
+
+    true.slopes$Estimates.Higher [i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
+                                                       sim.slopes$Estimate > true.slopes$Estimate[i]))
+
+  }
+
+
+  true.changes$Estimates.Lower <- NA
+  true.changes$Estimates.Higher <- NA
+
+  for(i in 1:nrow(true.changes)){
+
+    true.changes$Estimates.Lower [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+                                                       sim.changes$Estimate < true.changes$Estimate[i]))
+
+    true.changes$Estimates.Higher [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+                                                        sim.changes$Estimate > true.changes$Estimate[i]))
+
+  }
+
+  # Table the results
+
+  true.changes$Analysis <- "Cumulative Change"
+  true.slopes$Analysis <- "Directional Change"
+
+  restab <- rbind(true.changes, true.slopes)
+  restab$Simulation <- nsim
+  names(restab)[1] <- "Simulations"
+  restab <- restab[,c("Analysis", "Allele", "Estimate", "Estimates.Lower", "Estimates.Higher", "Simulations")]
+
+
+  # Return results
+
+  sim.results <- list(
+    results = restab,
+    observed_frequencies  = obs_freq_hold,
+    simulated_frequencies = sim_freq_hold,
+    full_results          = return_full_results,
+    n_founder_cohorts     = n_founder_cohorts,
+    remove_founders       = remove_founders,
+    fix_founders          = fix_founders,
+    resample_offspring    = resample_offspring,
+    slopes                = list(true.slopes = true.slopes,
+                                 sim.slopes  = sim.slopes),
+    cumulative_change = list(true.changes = true.changes,
+                             sim.changes  = sim.changes)
+  )
+
+  class(sim.results) <- "genedroppeR"
 
   sim.results
 

@@ -6,5 +6,5 @@
 \alias{genedroppeR-package}
 \title{genedroppeR: genedroppeR: conduct single-locus genedrop analyses through pedigrees}
 \description{
-This package conducts gene-drop analyses through pedigrees.
+This package conducts single-locus genedrop analyses through pedigrees.
 }
