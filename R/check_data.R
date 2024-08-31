@@ -1,7 +1,9 @@
 #' `check_data()`: Check data formatting before genedrop analysis.
 #'
 #' This function is used within `genedrop_...` functions to check and format the
-#' data for downstream genedrop analysis.
+#' data for downstream genedrop analysis. Returns an object `ped` that is
+#' correctly formatted for genedrop analysis. Note - this function is
+#' automatically run in all `genedrop_...` functions.
 #'
 #' @param id vector. Individual IDs
 #' @param mother vector. Maternal IDs corresponding to id. Missing values should
@@ -25,7 +27,9 @@ check_data <- function(id,
                        cohort = NULL,
                        genotype,
                        sex = NULL,
-                       multiallelic = F){
+                       multiallelic = FALSE){
+
+  ID = MOTHER = FATHER = NULL
 
   # Check that there are no duplicate IDs.
 
@@ -116,13 +120,13 @@ check_data <- function(id,
     if(length(which(is.na(cohort))) > 0){
       message(paste0("Removed ", length(which(is.na(cohort))), " ids with no cohort information."))
     }
-    ped <- subset(ped, !is.na(cohort))
+    ped <- filter(ped, !is.na(cohort))
 
     # Check that parents and offspring are not in the same cohort.
 
-    x <- subset(ped, select = c(ID, MOTHER, FATHER, cohort))
+    x <- select(ped, ID, MOTHER, FATHER, cohort)
 
-    x1 <- subset(ped, select = c(ID, cohort))
+    x1 <- select(ped, ID, cohort)
 
     names(x1) <- c("MOTHER", "Mum.cohort")
     suppressMessages(x <- left_join(x, x1))
@@ -154,7 +158,7 @@ check_data <- function(id,
     summarise(n = length(which(!is.na(genotype))))
 
   if(any(x9$n == 0)){
-    x9 <- subset(x9, n == 0)
+    x9 <- select(x9, n == 0)
     stop(paste0("Cohorts ", paste(x9$cohort, collapse = ", "), " have no genotyped individuals."))
   }
 

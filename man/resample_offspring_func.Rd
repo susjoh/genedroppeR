@@ -2,7 +2,7 @@
 % Please edit documentation in R/resample_offspring.R
 \name{resample_offspring_func}
 \alias{resample_offspring_func}
-\title{Reassign offspring across parents in each cohort.}
+\title{`resample_offspring_func()`: Reassign offspring across parents in each cohort.}
 \usage{
 resample_offspring_func(ped)
 }
@@ -13,9 +13,12 @@ resample_offspring_func(ped)
 This function will reassign offspring to each parent to ameliorate a common
 criticism of the genedrop method, that the pedigree is a product of fitness
 (i.e. "fitter" parents may have "fitter" offspring). This function reassigns
-offspring to each breeding parent within a cohort. This will preserve the
-distribution of offspring in mothers and fathers. At present, non-breeding
-individuals are not sampled as parents. BE AWARE: using this function means
-that a direct comparison to the true pedigree is no longer possible - it is
-up to the user to make a philosophical choice on what to do.
+offspring to each breeding parent within a cohort and can be run in
+`genedrop_...` functions by specifying `resample_offspring = T`. This will
+preserve the distribution of offspring in mothers and fathers. At present,
+non-breeding individuals are not sampled as parents as it cannot be
+determined if they are available to mate based on pedogree information alone.
+BE AWARE: using this function means that a direct comparison to the true
+pedigree is no longer possible - it is up to the user to make a philosophical
+choice on what to do.
 }

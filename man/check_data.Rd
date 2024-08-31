@@ -11,7 +11,7 @@ check_data(
   cohort = NULL,
   genotype,
   sex = NULL,
-  multiallelic = F
+  multiallelic = FALSE
 )
 }
 \arguments{
@@ -37,5 +37,7 @@ vector only needs to be specified for simulations on sex-linked SNPs.}
 }
 \description{
 This function is used within `genedrop_...` functions to check and format the
-data for downstream genedrop analysis.
+data for downstream genedrop analysis. Returns an object `ped` that is
+correctly formatted for genedrop analysis. Note - this function is
+automatically run in all `genedrop_...` functions.
 }

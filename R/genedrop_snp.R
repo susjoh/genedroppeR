@@ -38,6 +38,20 @@
 #'   of all individually simulated genotypes.
 #' @param verbose logical. Default = TRUE. Output the progress of the run.
 #' @param interval integer. Default 100. Output progress every 100 simulations.
+#' @examples
+#' data(unicorn)
+#' genedrop_obj <- genedrop_snp(id = unicorn$id,
+#'                              mother = unicorn$mother,
+#'                              father = unicorn$father,
+#'                              cohort = unicorn$cohort,
+#'                              genotype = unicorn$HornSNP,
+#'                              nsim = 10,
+#'                              n_founder_cohorts = 4,
+#'                              fix_founders = TRUE,
+#'                              verbose = TRUE,
+#'                              interval = 1,
+#'                              resample_offspring = FALSE)
+#'
 #' @export
 #
 
@@ -48,15 +62,17 @@ genedrop_snp <- function(id,
                          genotype,
                          nsim = 1000,
                          n_founder_cohorts = 1,
-                         fix_founders = T,
-                         verbose = T,
+                         fix_founders = TRUE,
+                         verbose = TRUE,
                          interval = 100,
-                         resample_offspring = F,
-                         remove_founders = T,
+                         resample_offspring = FALSE,
+                         remove_founders = TRUE,
                          return_full_results = NULL){
 
 
   # Check the data and obtain ped object
+
+  Simulation = p = Cohort = NULL
 
   ped <- check_data(id = id, mother = mother, father = father, cohort = cohort, genotype = genotype)
 
@@ -244,8 +260,6 @@ genedrop_snp <- function(id,
 
     }
 
-    head(haplo.frame)
-
     haplo.frame$MOTHER <- NULL
     haplo.frame$FATHER <- NULL
 
@@ -265,7 +279,7 @@ genedrop_snp <- function(id,
 
   if(!is.null(return_full_results)) return_full_results <- sim.results
 
-  genedrop_obj <- summary_genedrop(sim.results)
+  genedrop_obj <- summarise_genedrop(sim.results)
 
   # Calculate selection
 
@@ -275,15 +289,18 @@ genedrop_snp <- function(id,
   genedrop_obj$observed_frequencies$Simulation <- as.numeric(as.character(genedrop_obj$observed_frequencies$Simulation))
   genedrop_obj$observed_frequencies$Cohort <- as.numeric(as.character(genedrop_obj$observed_frequencies$Cohort))
 
+  sim_freq_hold <- genedrop_obj$simulated_frequencies
+  obs_freq_hold <- genedrop_obj$observed_frequencies
+
   if(remove_founders){
     if(length(n_founder_cohorts) == 1){
 
       genedrop_obj$simulated_frequencies <-
-        subset(genedrop_obj$simulated_frequencies,
+        filter(genedrop_obj$simulated_frequencies,
                !Cohort %in% unique(sort(genedrop_obj$simulated_frequencies$Cohort))[1:n_founder_cohorts])
 
       genedrop_obj$observed_frequencies <-
-        subset(genedrop_obj$observed_frequencies,
+        filter(genedrop_obj$observed_frequencies,
                !Cohort %in% unique(sort(genedrop_obj$observed_frequencies$Cohort))[1:n_founder_cohorts])
 
     }
@@ -294,6 +311,9 @@ genedrop_snp <- function(id,
     Allele = unique(genedrop_obj$simulated_frequencies$Allele)
 
   } else {
+
+    sim_freq_hold$Allele <- "p"
+    obs_freq_hold$Allele <- "p"
 
     genedrop_obj$simulated_frequencies$Allele <- "p"
     genedrop_obj$observed_frequencies$Allele <- "p"
@@ -367,8 +387,8 @@ genedrop_snp <- function(id,
 
   sim.results <- list(
     results = restab,
-    observed_frequencies  = genedrop_obj$observed_frequencies,
-    simulated_frequencies = genedrop_obj$simulated_frequencies,
+    observed_frequencies  = obs_freq_hold,
+    simulated_frequencies = sim_freq_hold,
     full_results          = return_full_results,
     n_founder_cohorts     = n_founder_cohorts,
     remove_founders       = remove_founders,

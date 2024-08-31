@@ -27,14 +27,11 @@
 #'   offspring, but will also mean that pedigrees are not directly comparable.
 #' @param verbose logical. Default = TRUE. Output the progress of the run.
 #' @param interval integer. Default 100. Output progress every 100 simulations.
-#' @import dplyr
-#' @import kinship2
-#' @import magrittr
 #' @export
 #
 
 
-genedrop_snp <- function(id,
+genedrop_snp_sex <- function(id,
                          mother,
                          father,
                          cohort = NULL,
@@ -42,10 +39,10 @@ genedrop_snp <- function(id,
                          sex,
                          nsim,
                          n_founder_cohorts = 1,
-                         fix_founders = T,
-                         verbose = T,
+                         fix_founders = TRUE,
+                         verbose = TRUE,
                          interval = 100,
-                         resample_offspring = F){
+                         resample_offspring = FALSE){
 
   # library(genedroppeR)
   #
@@ -63,9 +60,7 @@ genedrop_snp <- function(id,
   # interval = 100
   # resample_offspring = F
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # Check the data and obtain ped object
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
   ped <- check_data(id, mother, father, cohort, genotype, sex)
 
@@ -266,8 +261,6 @@ genedrop_snp <- function(id,
       rm(y1, y2, y3, y4)
 
     }
-
-    head(haplo.frame)
 
     haplo.frame$HOM_Parent <- NULL
     haplo.frame$HET_Parent <- NULL

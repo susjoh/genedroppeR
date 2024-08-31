@@ -4,7 +4,7 @@
 \name{genedroppeR-package}
 \alias{genedroppeR}
 \alias{genedroppeR-package}
-\title{genedroppeR: Gene-drop alleles through pedigrees.}
+\title{genedroppeR: genedroppeR: conduct single-locus genedrop analyses through pedigrees}
 \description{
 This package conducts gene-drop analyses through pedigrees.
 }

@@ -1,9 +1,10 @@
-
-#' Generic summary functions for class "genedroppeR" and "genedroppeR_cohort"
+#' Generic summary function for class "genedroppeR"
 #'
+#' @param genedrop_obj An object of class "genedroppeR" as output by functions `genedrop_...()`.
+#' @param ... Further arguments to be passed
 #' @exportS3Method base::summary
 
-summary.genedroppeR <- function(genedrop_obj){
+summary.genedroppeR <- function(genedrop_obj, ...){
   cat("\n")
   cat("*** Summary: genedroppeR analysis ***")
   cat("\n\n")
@@ -21,14 +22,16 @@ summary.genedroppeR <- function(genedrop_obj){
 
 }
 
+#' Generic summary function for class "genedroppeR_cohort"
+#' @param cohort_obj An object of class "cohort_obj" as output by
+#'   function `summary_cohort()`.
+#' @param ... Further arguments to be passed
 #' @exportS3Method base::summary
 
-
-summary.genedroppeR_cohort <- function(cohort_obj){
+summary.genedroppeR_cohort <- function(cohort_obj, ...){
   class(cohort_obj) <- NULL
   data.frame(cohort_obj)
 }
-
 
 
 #' Summarise allele frequencies from a genedrop object.
@@ -37,30 +40,31 @@ summary.genedroppeR_cohort <- function(cohort_obj){
 #' for a genedrop object. This is only called within specific functions and is
 #' not for general use.
 #'
-#' @param genedrop_object Output from `genedrop_snp()` or `genedrop_multi()`
+#' @param genedrop_obj An object of class "genedroppeR" as output by functions
+#'   `genedrop_...()`.
 #' @param genotype_delim char. Default = ''. Delimiter character for genotypes.
 #' @export
 
 
+summarise_genedrop <- function(genedrop_obj, genotype_delim = ''){
 
-summary_genedrop <- function(genedrop_object, genotype_delim = ''){
+  True.Geno = Simulation = cohort = NULL
 
-  genedrop_object <- subset(genedrop_object, !is.na(True.Geno))
+  genedrop_obj <- filter(genedrop_obj, !is.na(True.Geno))
 
-  if(is.numeric(genedrop_object$Simulated.Geno)){
+  if(is.numeric(genedrop_obj$Simulated.Geno)){
 
-    x1 <- melt(tapply(genedrop_object$Simulated.Geno, list(genedrop_object$cohort, genedrop_object$Simulation), sum))
-    x2 <- melt(tapply(genedrop_object$Simulated.Geno, list(genedrop_object$cohort, genedrop_object$Simulation), length))
+    x1 <- melt(tapply(genedrop_obj$Simulated.Geno, list(genedrop_obj$cohort, genedrop_obj$Simulation), sum))
+    x2 <- melt(tapply(genedrop_obj$Simulated.Geno, list(genedrop_obj$cohort, genedrop_obj$Simulation), length))
     names(x2)[3] <- "Count"
 
     suppressMessages(x1 <- left_join(x1, x2))
-    head(x1)
     names(x1) <- c("Cohort", "Simulation", "Sum", "Count")
     x1$p <- 1 - (x1$Sum/(2*x1$Count))
 
     x1$Sum <- NULL
 
-    x3 <- subset(genedrop_object, Simulation == 1) %>% subset(select = c(True.Geno, cohort)) %>% na.omit
+    x3 <- filter(genedrop_obj, Simulation == 1) %>% select(True.Geno, cohort) %>% na.omit
     x3 <- data.frame(Sum = tapply(x3$True.Geno, x3$cohort, sum),
                      Count = tapply(x3$True.Geno, x3$cohort, length))
 
@@ -73,11 +77,9 @@ summary_genedrop <- function(genedrop_object, genotype_delim = ''){
 
   } else {
 
-    head(genedrop_object)
-
     # simulated frequencies
 
-    x1 <- melt(genedrop_object[,c("cohort", "Simulation", "Mum.Allele", "Dad.Allele")], id.vars = c("cohort", "Simulation"))
+    x1 <- melt(genedrop_obj[,c("cohort", "Simulation", "Mum.Allele", "Dad.Allele")], id.vars = c("cohort", "Simulation"))
     x2a <- data.frame(table(x1$cohort, x1$Simulation, x1$value))
     x2b <- data.frame(table(x1$cohort, x1$Simulation))
     names(x2b)[3] <- "Count"
@@ -85,7 +87,6 @@ summary_genedrop <- function(genedrop_object, genotype_delim = ''){
 
     x1$Freq <- x1$Freq/x1$Count
 
-    head(x1)
     names(x1) <- c("Cohort", "Simulation", "Allele", "p", "Count")
 
     x1 <- x1[,c("Cohort", "Simulation", "Count", "p", "Allele")]
@@ -94,7 +95,7 @@ summary_genedrop <- function(genedrop_object, genotype_delim = ''){
 
     # observed frequencies
 
-    x3 <- subset(genedrop_object, Simulation == 1) %>% subset(select = c(True.Geno, cohort)) %>% na.omit
+    x3 <- filter(genedrop_obj, Simulation == 1) %>% select(True.Geno, cohort) %>% na.omit
 
     x3$Allele1 <- sapply(x3$True.Geno, function(foo) strsplit(foo, split = genotype_delim, fixed = T)[[1]][1])
     x3$Allele2 <- sapply(x3$True.Geno, function(foo) strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
@@ -109,7 +110,6 @@ summary_genedrop <- function(genedrop_object, genotype_delim = ''){
     x3$Freq <- x3$Freq/x3$Count
     x3$Simulation <- 0
 
-    head(x3)
     names(x3) <- c("Cohort", "Allele", "p", "Count", "Simulation")
 
     x3 <- x3[,c("Cohort", "Simulation", "Count", "p", "Allele")]
@@ -118,7 +118,7 @@ summary_genedrop <- function(genedrop_object, genotype_delim = ''){
 
   }
 
-  return(list(observed_frequencies = x3,
-              simulated_frequencies = x1))
+  list(observed_frequencies = x3,
+       simulated_frequencies = x1)
 
 }

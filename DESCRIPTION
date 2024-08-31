@@ -1,13 +1,14 @@
 Package: genedroppeR
 Type: Package
-Title: Gene-drop alleles through pedigrees.
-Version: 0.1.2
+Title: genedroppeR: conduct single-locus genedrop analyses through pedigrees
+Version: 0.1.3
 Author: person("Susan", "Johnston",
   email = "Susan.Johnston@ed.ac.uk",
   role = c("aut", "cre"))
+Maintainer: Susan Johnston <Susan.Johnston@ed.ac.uk>
 Description: This package conducts gene-drop analyses through pedigrees.
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Imports: ggplot2, reshape2, dplyr, kinship2, magrittr
+Imports: ggplot2, reshape2, dplyr, kinship2, gridExtra
 RoxygenNote: 7.3.2

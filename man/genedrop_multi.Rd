@@ -13,8 +13,8 @@ genedrop_multi(
   genotype_delim = "",
   nsim,
   n_founder_cohorts = 1,
-  fix_founders = T,
-  verbose = T,
+  fix_founders = TRUE,
+  verbose = TRUE,
   interval = 100,
   resample_offspring = F
 )

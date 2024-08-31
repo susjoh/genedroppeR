@@ -11,10 +11,15 @@
 #' @param genotype vector. Genotypes IDs corresponding to id.
 #' @param genotype_delim char. A character denoting the genotype delimited.
 #'   Default = ''.
-#' @import dplyr
-#' @import kinship2
-#' @import magrittr
-#' @import reshape2
+#' @examples
+#'
+#' data(unicorn)
+#' x <- summary_cohort(id = unicorn$id,
+#'                     mother = unicorn$mother,
+#'                     father = unicorn$father,
+#'                     cohort = unicorn$cohort,
+#'                     genotype = unicorn$HornSNP)
+#'
 #' @export
 
 

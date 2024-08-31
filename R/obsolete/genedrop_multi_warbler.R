@@ -20,11 +20,7 @@
 #'   based on the cohort allele frequencies.
 #' @param verbose logical. Output the progress of the run.
 #' @param interval int. Default 100. Output progress every 100 simulations.
-#' @import dplyr
-#' @import kinship2
-#' @import magrittr
-#' @import reshape2
-#' @export
+
 
 
 

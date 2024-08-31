@@ -26,16 +26,18 @@ x <- summary_cohort(id = unicorn$id,
 summary(x)
 plot(x)
 
-x <- genedrop_snp(id = unicorn$id,
+genedrop_obj <- genedrop_snp(id = unicorn$id,
                   mother = unicorn$mother,
                   father = unicorn$father,
                   cohort = unicorn$cohort,
                   genotype = unicorn$HornSNP,
-                  nsim = 100,
-                  n_founder_cohorts = 1,
+                  nsim = 10,
+                  n_founder_cohorts = 4,
                   fix_founders = T,
                   verbose = T,
                   interval = 1,
                   resample_offspring = F)
 
-summary(genedrop_obj)
+summary(x)
+plot(x)
+

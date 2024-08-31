@@ -25,10 +25,6 @@
 #'   offspring, but will also mean that pedigrees are not directly comparable.
 #' @param verbose logical. Output the progress of the run.
 #' @param interval int. Default 100. Output progress every 100 simulations.
-#' @import dplyr
-#' @import kinship2
-#' @import magrittr
-#' @import reshape2
 #' @export
 
 
@@ -40,8 +36,8 @@ genedrop_multi <- function(id,
                            genotype_delim = '',
                            nsim,
                            n_founder_cohorts = 1,
-                           fix_founders = T,
-                           verbose = T,
+                           fix_founders = TRUE,
+                           verbose = TRUE,
                            interval = 100,
                            resample_offspring = F){
 
@@ -49,7 +45,7 @@ genedrop_multi <- function(id,
   # 1. Format the data           #
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-  ped <- check_data(id, mother, father, cohort, genotype, multiallelic = T)
+  ped <- check_data(id, mother, father, cohort, genotype, multiallelic = TRUE)
 
   rm(id, mother, father, cohort, genotype)
 
@@ -67,7 +63,6 @@ genedrop_multi <- function(id,
     strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
 
   y <- melt(y, id.vars = c("genotype", "cohort"))
-  head(y)
 
   x.allele <- sort(unique(y$value))
 
@@ -204,8 +199,6 @@ genedrop_multi <- function(id,
 
       rm(y1, y2, y3, y4)
     }
-
-    head(haplo.frame)
 
     haplo.frame$MOTHER <- NULL
     haplo.frame$FATHER <- NULL

@@ -8,23 +8,26 @@
   genedrop_obj,
   analysis_to_plot = "all",
   sim_alpha = 0.3,
-  obs_line_col = "red"
+  obs_line_col = "red",
+  ...
 )
 }
 \arguments{
-\item{genedrop_obj}{Gene-Drop summary object from the function
-`summary_genedrop()`}
+\item{genedrop_obj}{Gene-Drop object}
 
 \item{analysis_to_plot}{Default = "all". Options are "frequency",
 "directional" and "cumulative". This will print graphs of allele frequency
-changes, directional change, and cumulative change. Press <Enter> to
-advance through each option. Alternatively, the user can specify options to show
-specific graphs (e.g. "directional").}
+changes, directional change, and cumulative change. If the locus is
+multi-allelic, the user will be prmopted to  Press <Enter> to advance
+through each option. In biallelic and multi-allelic cases, the user can
+specify options to show specific graphs (e.g. "directional").}
 
 \item{sim_alpha}{Default = 0.3. Alpha (transparency) value for plotted lines.}
 
 \item{obs_line_col}{Default = "red". Line colour to use for the observed
 data.}
+
+\item{...}{Further arguments to be passed}
 }
 \description{
 Plot a summary graph of Gene-Drop Simulations.

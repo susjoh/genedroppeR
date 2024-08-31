@@ -1,27 +1,34 @@
 #' Plot a summary graph of Gene-Drop Simulations.
 #'
-#' @param genedrop_obj Gene-Drop summary object from the function
-#'   `summary_genedrop()`
+#' @param genedrop_obj Gene-Drop object
 #' @param analysis_to_plot Default = "all". Options are "frequency",
 #'   "directional" and "cumulative". This will print graphs of allele frequency
-#'   changes, directional change, and cumulative change. Press <Enter> to
-#'   advance through each option. Alternatively, the user can specify options to show
-#'   specific graphs (e.g. "directional").
+#'   changes, directional change, and cumulative change. If the locus is
+#'   multi-allelic, the user will be prmopted to  Press <Enter> to advance
+#'   through each option. In biallelic and multi-allelic cases, the user can
+#'   specify options to show specific graphs (e.g. "directional").
 #' @param sim_alpha Default = 0.3. Alpha (transparency) value for plotted lines.
 #' @param obs_line_col Default = "red". Line colour to use for the observed
 #'   data.
+#' @param ... Further arguments to be passed
 #' @exportS3Method base::plot
 #'
 
 plot.genedroppeR <- function(genedrop_obj,
                              analysis_to_plot = "all",
                              sim_alpha = 0.3,
-                             obs_line_col = "red"){
+                             obs_line_col = "red", ...){
+
+  Cohort = Simulation = p = Estimate = NULL
+
+
+  alleles <- sort(unique(genedrop_obj$simulated_frequencies$Allele))
 
   p1 <- ggplot(genedrop_obj$simulated_frequencies, aes(Cohort, p, group = Simulation)) +
     geom_line(alpha = sim_alpha) +
     geom_line(data = genedrop_obj$observed_frequencies, aes(Cohort, p), col = obs_line_col) +
     theme_bw() +
+    geom_vline(xintercept = genedrop_obj$n_founder_cohorts+0.5, linetype= "dashed") +
     ggtitle(paste0("Allele Frequency Changes: Nsim = ", max(genedrop_obj$simulated_frequencies$Simulation))) +
     facet_wrap(~Allele)
 
@@ -41,13 +48,19 @@ plot.genedroppeR <- function(genedrop_obj,
 
   if(analysis_to_plot == "all"){
 
-    print(p1)
-    message("Press <Enter> to continue...")
-    readline() # Waits for the user to press enter
-    print(p2)
-    message("Press <Enter> to continue...")
-    readline() # Waits for the user to press enter
-    print(p3)
+    if(length(alleles) == 1){
+      suppressMessages(gridExtra::grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 1),
+                                                                c(2, 3))))
+    } else {
+
+      print(p1)
+      message("Press <Enter> to continue...")
+      readline() # Waits for the user to press enter
+      print(p2)
+      message("Press <Enter> to continue...")
+      readline() # Waits for the user to press enter
+      print(p3)
+    }
 
   }
 
@@ -61,7 +74,9 @@ plot.genedroppeR <- function(genedrop_obj,
 #' @exportS3Method base::plot
 
 
-plot.genedroppeR_cohort <- function(cohort_obj){
+plot.genedroppeR_cohort <- function(cohort_obj, ...){
+
+  cohort = PropFounders = PropGenotyped = variable = value = NULL
 
   x <- summary(cohort_obj)
   x <- subset(x, cohort != "missing")
@@ -116,7 +131,7 @@ plot.genedroppeR_cohort <- function(cohort_obj){
     if(length(alleles)<3){
 
       gridExtra::grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 1),
-                                                                      c(2, 3)))
+                                                                c(2, 3)))
     } else {
       print(p1)
       message("Press <Enter> to continue...")

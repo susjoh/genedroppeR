@@ -2,10 +2,15 @@
 % Please edit documentation in R/summary_genedrop.R
 \name{summary.genedroppeR}
 \alias{summary.genedroppeR}
-\title{Generic summary functions for class "genedroppeR" and "genedroppeR_cohort"}
+\title{Generic summary function for class "genedroppeR"}
 \usage{
-\method{summary}{genedroppeR}(genedrop_obj)
+\method{summary}{genedroppeR}(genedrop_obj, ...)
+}
+\arguments{
+\item{genedrop_obj}{An object of class "genedroppeR" as output by functions `genedrop_...()`.}
+
+\item{...}{Further arguments to be passed}
 }
 \description{
-Generic summary functions for class "genedroppeR" and "genedroppeR_cohort"
+Generic summary function for class "genedroppeR"
 }

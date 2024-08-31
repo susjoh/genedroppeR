@@ -32,3 +32,13 @@ Default = ''.}
 Summarise cohorts by number of founders, proportion of individuals genotyped
 and/or allele frequency information at a given locus.
 }
+\examples{
+
+data(unicorn)
+x <- summary_cohort(id = unicorn$id,
+                    mother = unicorn$mother,
+                    father = unicorn$father,
+                    cohort = unicorn$cohort,
+                    genotype = unicorn$HornSNP)
+
+}
