@@ -3,6 +3,7 @@
 export(check_data)
 export(genedrop_multi)
 export(genedrop_snp)
+export(genedrop_snp_sex)
 export(plot_genedrop)
 export(plot_genedrop_cohort)
 export(process_genedrop)

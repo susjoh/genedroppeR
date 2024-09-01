@@ -25,8 +25,26 @@
 #'   offspring are resampled across parents in each cohort. This is to remove
 #'   any potential signal where prolific individuals tend to have prolific
 #'   offspring, but will also mean that pedigrees are not directly comparable.
+#' @param remove_founders Default = TRUE. If TRUE, then the founder cohorts will
+#'   be removed from calculations of directional and cumulative change.
+#' @param return_full_results Default = NULL. This will also output tables
+#'   of all individually simulated genotypes.
 #' @param verbose logical. Default = TRUE. Output the progress of the run.
 #' @param interval integer. Default 100. Output progress every 100 simulations.
+#' data(unicorn)
+#' sub_unicorn <- subset(unicorn, sex %in% c(1,2))
+#' genedrop_obj <- genedrop_snp_sex(id = sub_unicorn$id,
+#'                              mother = sub_unicorn$mother,
+#'                              father = sub_unicorn$father,
+#'                              cohort = sub_unicorn$cohort,
+#'                              genotype = sub_unicorn$Xlinked,
+#'                              sex = sub_unicorn$sex,
+#'                              nsim = 10,
+#'                              n_founder_cohorts = 4,
+#'                              fix_founders = TRUE,
+#'                              verbose = TRUE,
+#'                              interval = 1,
+#'                              resample_offspring = FALSE)
 #' @export
 #
 
@@ -42,29 +60,18 @@ genedrop_snp_sex <- function(id,
                          fix_founders = TRUE,
                          verbose = TRUE,
                          interval = 100,
-                         resample_offspring = FALSE){
+                         resample_offspring = FALSE,
+                         remove_founders = TRUE,
+                         return_full_results = NULL){
 
-  # library(genedroppeR)
-  #
-  # id = unicorn$id
-  # mother = unicorn$mother
-  # father = unicorn$father
-  # cohort = unicorn$cohort
-  # genotype = unicorn$HornSNP
-  # sex = ifelse(unicorn$id %in% mother, 2, ifelse(unicorn$id %in% father, 1, sample(1:2)))
-  # sex_system = "XY"
-  # nsim = 1
-  # n_founder_cohorts = 1
-  # fix_founders = T
-  # verbose = T
-  # interval = 100
-  # resample_offspring = F
 
   # Check the data and obtain ped object
 
-  ped <- check_data(id, mother, father, cohort, genotype, sex)
+  ped_check <- check_data(id, mother, father, cohort, genotype, sex)
+  ped <- ped_check$ped
+  sex_system <- ped_check$sex_system
 
-  rm(id, mother, father, cohort, genotype, sex)
+  rm(id, mother, father, cohort, genotype, sex, ped_check)
 
   #~~ Recode to Het and Hom parent.
 
@@ -76,6 +83,14 @@ genedrop_snp_sex <- function(id,
     ped$HOM_Parent = ped$FATHER
   }
 
+  # deal with heterogametic sex errors
+
+  heterrors <- which(ped$genotype == 1 & ped$sex == 1)
+
+  if(length(heterrors) > 0){
+    message(paste0("Removed ", length(heterrors), " heterozygous genotypes in ", sex_system, " ids (", round(((length(heterrors)/length(which(ped$sex == 1)))*100), 3), "%)."))
+    ped$genotype[heterrors] <- NA
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   # Get the observed population frequency information
@@ -203,9 +218,9 @@ genedrop_snp_sex <- function(id,
         haplo.frame$Het.Parent.Allele[y4] <- sapply(y4, function(y) ((runif (1) > x$p[h]) + 0L))
       }
 
-      # Which heterogametics have a value for their heterogametic parent?
+      # Which heterogametics have a value for their heterogametic parent? Make them have the same as their homogametic parent
 
-      haplo.frame$Het.Parent.Allele[which(haplo.frame$sex == 1 & !is.na(haplo.frame$Het.Parent.Allele))] <- NA
+      haplo.frame$Het.Parent.Allele[which(haplo.frame$sex == 1)] <- NA
 
       rm(y1, y2, y3, y4)
 
@@ -275,9 +290,134 @@ genedrop_snp_sex <- function(id,
 
   sim.results <- bind_rows(sim.list)
 
-  sim.results$Simulated.Geno <- sim.results$Hom.Parent.Allele + sim.results$Het.Parent.Allele
+  sim.results$Simulated.Geno <- sim.results$Hom.Parent.Allele + sim.results$Hom.Parent.Allele
 
   names(sim.results)[names(sim.results) == "genotype"] <- "True.Geno"
+
+  if(!is.null(return_full_results)) return_full_results <- sim.results
+
+  genedrop_obj <- process_genedrop(sim.results)
+
+  # Calculate selection
+
+  genedrop_obj$simulated_frequencies$Simulation <- as.numeric(as.character(genedrop_obj$simulated_frequencies$Simulation))
+  genedrop_obj$simulated_frequencies$Cohort <- as.numeric(as.character(genedrop_obj$simulated_frequencies$Cohort))
+
+  genedrop_obj$observed_frequencies$Simulation <- as.numeric(as.character(genedrop_obj$observed_frequencies$Simulation))
+  genedrop_obj$observed_frequencies$Cohort <- as.numeric(as.character(genedrop_obj$observed_frequencies$Cohort))
+
+  sim_freq_hold <- genedrop_obj$simulated_frequencies
+  obs_freq_hold <- genedrop_obj$observed_frequencies
+
+  if(remove_founders){
+    if(length(n_founder_cohorts) == 1){
+
+      genedrop_obj$simulated_frequencies <-
+        filter(genedrop_obj$simulated_frequencies,
+               !Cohort %in% unique(sort(genedrop_obj$simulated_frequencies$Cohort))[1:n_founder_cohorts])
+
+      genedrop_obj$observed_frequencies <-
+        filter(genedrop_obj$observed_frequencies,
+               !Cohort %in% unique(sort(genedrop_obj$observed_frequencies$Cohort))[1:n_founder_cohorts])
+
+    }
+  }
+
+  if("Allele" %in% names(genedrop_obj$simulated_frequencies)){
+
+    Allele = unique(genedrop_obj$simulated_frequencies$Allele)
+
+  } else {
+
+    sim_freq_hold$Allele <- "p"
+    obs_freq_hold$Allele <- "p"
+
+    genedrop_obj$simulated_frequencies$Allele <- "p"
+    genedrop_obj$observed_frequencies$Allele <- "p"
+  }
+
+  suppressMessages({
+
+    sim.slopes <- genedrop_obj$simulated_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = lm(p ~ Cohort)$coefficients[[2]])
+
+    true.slopes <- genedrop_obj$observed_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = lm(p ~ Cohort)$coefficients[[2]])
+
+    cumu.func <- function(x){
+      x <- diff(x)
+      x <- ifelse(x < 0, x * -1, x)
+      sum(x, na.rm = F)
+    }
+
+    sim.changes <- genedrop_obj$simulated_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = cumu.func(p))
+
+    true.changes <- genedrop_obj$observed_frequencies %>%
+      group_by(Simulation, Allele) %>%
+      summarise(Estimate = cumu.func(p))
+
+  })
+
+  true.slopes$Estimates.Lower <- NA
+  true.slopes$Estimates.Higher <- NA
+
+  for(i in 1:nrow(true.slopes)){
+
+    true.slopes$Estimates.Lower [i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
+                                                      sim.slopes$Estimate < true.slopes$Estimate[i]))
+
+    true.slopes$Estimates.Higher [i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
+                                                       sim.slopes$Estimate > true.slopes$Estimate[i]))
+
+  }
+
+
+  true.changes$Estimates.Lower <- NA
+  true.changes$Estimates.Higher <- NA
+
+  for(i in 1:nrow(true.changes)){
+
+    true.changes$Estimates.Lower [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+                                                       sim.changes$Estimate < true.changes$Estimate[i]))
+
+    true.changes$Estimates.Higher [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+                                                        sim.changes$Estimate > true.changes$Estimate[i]))
+
+  }
+
+  # Table the results
+
+  true.changes$Analysis <- "Cumulative Change"
+  true.slopes$Analysis <- "Directional Change"
+
+  restab <- rbind(true.changes, true.slopes)
+  restab$Simulation <- nsim
+  names(restab)[1] <- "Simulations"
+  restab <- restab[,c("Analysis", "Allele", "Estimate", "Estimates.Lower", "Estimates.Higher", "Simulations")]
+
+
+  # Return results
+
+  sim.results <- list(
+    results = restab,
+    observed_frequencies  = obs_freq_hold,
+    simulated_frequencies = sim_freq_hold,
+    full_results          = return_full_results,
+    n_founder_cohorts     = n_founder_cohorts,
+    remove_founders       = remove_founders,
+    fix_founders          = fix_founders,
+    resample_offspring    = resample_offspring,
+    slopes                = list(true.slopes = true.slopes,
+                                 sim.slopes  = sim.slopes),
+    cumulative_change = list(true.changes = true.changes,
+                             sim.changes  = sim.changes)
+  )
+
+  class(sim.results) <- "genedroppeR"
 
   sim.results
 

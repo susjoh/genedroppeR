@@ -177,8 +177,8 @@ check_data <- function(id,
 
   if(!is.null(sex)){
 
-    if(any(is.na(ped$sex))){
-      stop("NA values in sex - sex must be specified for sex-linked loci.")
+    if(any(is.na(ped$sex)) || any(!ped$sex %in% c(1, 2))){
+      stop("Sex must be specified as 1 (heterogametic sex) and 2 (homogametic sex) for all ids for sex-linked loci.")
     }
 
     if(length(unique(ped$sex[which(ped$ID %in% ped$MOTHER)])) > 1){
@@ -189,13 +189,22 @@ check_data <- function(id,
       stop("Some fathers have been assigned as females - please check sex designations.")
     }
 
+    sex_system = NULL
+
     if(any(ped$ID[which(ped$sex == 1)] %in% ped$MOTHER) || any(ped$ID[which(ped$sex == 2)] %in% ped$FATHER)){
       message("Sex-linked models will assume a ZW system")
+      sex_system = "ZW"
+
     } else {
       message("Sex-linked models will assume a XY system")
+      sex_system = "XY"
     }
+
 
   }
 
-  ped
+
+    list(ped = ped, sex_system = sex_system)
+
+
 }

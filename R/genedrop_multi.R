@@ -29,6 +29,20 @@
 #'   be removed from calculations of directional and cumulative change.
 #' @param return_full_results Default = NULL. This will also output tables
 #'   of all individually simulated genotypes.
+#' @examples
+#' data(unicorn)
+#' sub_unicorn <- subset(unicorn, cohort < 2010)
+#' genedrop_obj <- genedrop_multi(id = sub_unicorn$id,
+#'                              mother = sub_unicorn$mother,
+#'                              father = sub_unicorn$father,
+#'                              cohort = sub_unicorn$cohort,
+#'                              genotype = sub_unicorn$MHC,
+#'                              nsim = 10,
+#'                              n_founder_cohorts = 4,
+#'                              fix_founders = TRUE,
+#'                              verbose = TRUE,
+#'                              interval = 1,
+#'                              resample_offspring = FALSE)
 #' @export
 
 
@@ -51,7 +65,7 @@ genedrop_multi <- function(id,
   # 1. Format the data           #
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-  ped <- check_data(id, mother, father, cohort, genotype, multiallelic = TRUE)
+  ped <- check_data(id, mother, father, cohort, genotype, multiallelic = TRUE)$ped
 
   rm(id, mother, father, cohort, genotype)
 
@@ -152,14 +166,14 @@ genedrop_multi <- function(id,
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER) & !haplo.frame$ID %in% fixed_founders)
 
       if(length(y1) > 0) haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
-                                          1,
-                                          function(y) y[((runif (1) > 0.5) + 1L)])
+                                                             1,
+                                                             function(y) y[((runif (1) > 0.5) + 1L)])
 
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER) & !haplo.frame$ID %in% fixed_founders)
 
       if(length(y2) > 0) haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
-                                          1,
-                                          function(y) y[((runif (1) > 0.5) + 1L)])
+                                                             1,
+                                                             function(y) y[((runif (1) > 0.5) + 1L)])
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Mum.Allele))
 
@@ -180,14 +194,14 @@ genedrop_multi <- function(id,
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER))
 
       if(length(y1) > 0) haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
-                                          1,
-                                          function(y) y[((runif (1) > 0.5) + 1L)])
+                                                             1,
+                                                             function(y) y[((runif (1) > 0.5) + 1L)])
 
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER))
 
       if(length(y2) > 0) haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
-                                          1,
-                                          function(y) y[((runif (1) > 0.5) + 1L)])
+                                                             1,
+                                                             function(y) y[((runif (1) > 0.5) + 1L)])
 
       #~~ Get allele frequencies
 

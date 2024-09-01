@@ -66,3 +66,18 @@ of all individually simulated genotypes.}
 \description{
 Conduct a single Gene-Drop Simulation for a multi-allelic locus.
 }
+\examples{
+data(unicorn)
+sub_unicorn <- subset(unicorn, cohort < 2010)
+genedrop_obj <- genedrop_multi(id = sub_unicorn$id,
+                             mother = sub_unicorn$mother,
+                             father = sub_unicorn$father,
+                             cohort = sub_unicorn$cohort,
+                             genotype = sub_unicorn$MHC,
+                             nsim = 10,
+                             n_founder_cohorts = 4,
+                             fix_founders = TRUE,
+                             verbose = TRUE,
+                             interval = 1,
+                             resample_offspring = FALSE)
+}

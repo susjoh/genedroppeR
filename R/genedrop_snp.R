@@ -75,7 +75,7 @@ genedrop_snp <- function(id,
 
   Simulation = p = Cohort = NULL
 
-  ped <- check_data(id = id, mother = mother, father = father, cohort = cohort, genotype = genotype)
+  ped <- check_data(id = id, mother = mother, father = father, cohort = cohort, genotype = genotype)$ped
 
   rm(id, mother, father, cohort, genotype)
 
