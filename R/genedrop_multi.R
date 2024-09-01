@@ -61,19 +61,19 @@ genedrop_multi <- function(id,
                            remove_founders = TRUE,
                            return_full_results = NULL){
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  # 1. Format the data           #
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+  Cohort = Simulation = p = NULL
+
+  # Format the data
 
   ped <- check_data(id, mother, father, cohort, genotype, multiallelic = TRUE)$ped
 
   rm(id, mother, father, cohort, genotype)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  # 2. Get the observed population frequency information #
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-  #~~ Get the individual allele counts.
+  # Get the observed population frequency information #
+
+
+  # Get the individual allele counts.
 
   y <- subset(ped, select = c(genotype, cohort))
   y$genotype <- as.character(y$genotype)
@@ -98,11 +98,11 @@ genedrop_multi <- function(id,
   for(i in x.allele) x[,i] <- x[,i]/x$GenoCount
 
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-  # 3. Sample the genotypes in the founder cohorts     #
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-  #~~ If founders are fixed, determine which IDs are founders!
+  # Sample the genotypes in the founder cohorts
+
+
+  # If founders are fixed, determine which IDs are founders!
 
   if (fix_founders == T){
 
@@ -114,11 +114,11 @@ genedrop_multi <- function(id,
 
   }
 
-  #~~ index the pedigree
+  # index the pedigree
 
   row.names(ped) <- ped$ID
 
-  #~~ Create columns for parentally inherited alleles and add some for the founders
+  # Create columns for parentally inherited alleles and add some for the founders
 
   ped$Mum.Allele <- NA
   ped$Dad.Allele <- NA
@@ -134,7 +134,7 @@ genedrop_multi <- function(id,
   ped$FATHER <- as.character(ped$FATHER)
 
 
-  #~~ Create a list to save results
+  # Create a list to save results
 
   ped.hold <- ped
 
@@ -155,11 +155,11 @@ genedrop_multi <- function(id,
       ped <- ped.hold
     }
 
-    #~~ Create a data frame with space for the results
+    # Create a data frame with space for the results
 
     haplo.frame <- ped
 
-    #~~ Sample the founders
+    # Sample the founders
 
     for(h in 1:n_founder_cohorts){
 
@@ -187,7 +187,7 @@ genedrop_multi <- function(id,
 
     }
 
-    #~~ sample the rest
+    # sample the rest
 
     for(h in (n_founder_cohorts+1):nrow(x)){
 
@@ -203,7 +203,7 @@ genedrop_multi <- function(id,
                                                              1,
                                                              function(y) y[((runif (1) > 0.5) + 1L)])
 
-      #~~ Get allele frequencies
+      # Get allele frequencies
 
       temp.freq <- data.frame(table(c(haplo.frame$Mum.Allele[y1], haplo.frame$Dad.Allele[y2])))
       temp.freq$Freq <- temp.freq$Freq / sum(temp.freq$Freq)

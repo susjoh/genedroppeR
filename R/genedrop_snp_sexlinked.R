@@ -64,6 +64,7 @@ genedrop_snp_sex <- function(id,
                          remove_founders = TRUE,
                          return_full_results = NULL){
 
+  Hom.Parent.Allele = Het.Parent.Allele = Cohort = Simulation = p = NULL
 
   # Check the data and obtain ped object
 
