@@ -4,6 +4,11 @@ library(dplyr)
 
 data(unicorn)
 
+library(pedtricks)
+
+ggpedigree(unicorn, cohort = cohort)
+ggsave("tutorial/figs/pedigree.png", height = 6, width = 6)
+
 
 #
 id = unicorn$id
@@ -54,4 +59,8 @@ genedrop_obj <- genedrop_multi(id = unicorn$id,
 
 summary_genedrop(genedrop_obj)
 plot_genedrop(genedrop_obj)
+
+
+paste(haplo.frame$Hom.Parent.Allele[which(haplo.frame$sex == 1 & haplo.frame$cohort == x$cohort[h])],
+      haplo.frame$Het.Parent.Allele[which(haplo.frame$sex == 1 & haplo.frame$cohort == x$cohort[h])])
 

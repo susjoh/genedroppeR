@@ -175,6 +175,9 @@ check_data <- function(id,
 
   # Check all the sexes are okay re: heterogametic sex
 
+  sex_system = NULL
+
+
   if(!is.null(sex)){
 
     if(any(is.na(ped$sex)) || any(!ped$sex %in% c(1, 2))){
@@ -189,7 +192,6 @@ check_data <- function(id,
       stop("Some fathers have been assigned as females - please check sex designations.")
     }
 
-    sex_system = NULL
 
     if(any(ped$ID[which(ped$sex == 1)] %in% ped$MOTHER) || any(ped$ID[which(ped$sex == 2)] %in% ped$FATHER)){
       message("Sex-linked models will assume a ZW system")
@@ -204,7 +206,7 @@ check_data <- function(id,
   }
 
 
-    list(ped = ped, sex_system = sex_system)
+  list(ped = ped, sex_system = sex_system)
 
 
 }
