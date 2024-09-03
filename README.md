@@ -1,5 +1,5 @@
 [![pkgcheck](https://github.com/susjoh/genedroppeR/workflows/pkgcheck/badge.svg)](https://github.com/susjoh/genedroppeR/actions?query=workflow%3Apkgcheck)
-
+[![R-CMD-check](https://github.com/susjoh/genedroppeR/workflows/R-CMD-check/badge.svg)](https://github.com/susjoh/genedroppeR/actions?query=workflow%3AR-CMD-check)
 ## `genedroppeR`: An R package to conduct single-locus genedrop analyses through pedigrees.
 
 This package conducts "genedrop" simulations at individual loci through complex pedigree structures to determine if changes in allele frequency are consistent with e.g. drift, directional selection, or balancing selection.
