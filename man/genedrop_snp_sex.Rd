@@ -79,18 +79,20 @@ the tutorial at https://github.com/susjoh/genedroppeR.
 }
 \examples{
 data(unicorn)
-sub_unicorn <- subset(unicorn, sex \%in\% c(1,2))
-genedrop_obj <- genedrop_snp_sex(id = sub_unicorn$id,
-                                 mother = sub_unicorn$mother,
-                                 father = sub_unicorn$father,
-                                 cohort = sub_unicorn$cohort,
-                                 genotype = sub_unicorn$Xlinked,
-                                 sex = sub_unicorn$sex,
-                                 nsim = 100,
-                                 n_founder_cohorts = 4,
-                                 fix_founders = TRUE,
-                                 verbose = TRUE,
-                                 interval = 10)
+sub_unicorn <- subset(unicorn, sex \%in\% c(1, 2))
+genedrop_obj <- genedrop_snp_sex(
+  id = sub_unicorn$id,
+  mother = sub_unicorn$mother,
+  father = sub_unicorn$father,
+  cohort = sub_unicorn$cohort,
+  genotype = sub_unicorn$Xlinked,
+  sex = sub_unicorn$sex,
+  nsim = 100,
+  n_founder_cohorts = 4,
+  fix_founders = TRUE,
+  verbose = TRUE,
+  interval = 10
+)
 summary_genedrop(genedrop_obj)
 plot_genedrop(genedrop_obj)
 }

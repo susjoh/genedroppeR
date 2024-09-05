@@ -5,5 +5,4 @@ sex_test.R
 R/obsolete
 tutorial/
 Genedrop_Critique.docx
-test_files/
-
+tests/

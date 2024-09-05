@@ -26,71 +26,68 @@ check_data <- function(id,
                        cohort = NULL,
                        genotype,
                        sex = NULL,
-                       multiallelic = FALSE){
-
-  ID = MOTHER = FATHER = NULL
+                       multiallelic = FALSE) {
+  ID <- MOTHER <- FATHER <- NULL
 
   #
 
   # Check that there are no duplicate IDs.
 
-  if (any(as.numeric(names(table(table(id)))) > 1)){
-    stop ("Duplicate values in id")
+  if (any(as.numeric(names(table(table(id)))) > 1)) {
+    stop("Duplicate values in id")
   }
 
   # If cohort is provided, then check there are no NA's and that it is an integer
 
-  if (!is.null(cohort) & !is.integer(cohort)){
+  if (!is.null(cohort) & !is.integer(cohort)) {
     stop("Cohort must be an integer")
   }
 
-  if (!is.null(cohort) & any(is.na(cohort))){
+  if (!is.null(cohort) & any(is.na(cohort))) {
     message("NAs present in cohort - these individuals will be removed.")
   }
 
   # If genotype is provided, then check the locus is not monomorphic.
 
-  if (!is.null(genotype) & length(table(genotype)) == 1){
-    stop ("Locus is monomorphic")
+  if (!is.null(genotype) & length(table(genotype)) == 1) {
+    stop("Locus is monomorphic")
   }
 
   # If genotype is numeric, then only accept if 0, 1, 2
 
-  if(multiallelic == F){
-    if (!is.null(genotype) & is.numeric(genotype)){
-
-      if (any(!na.omit(genotype) %in% 0:2)){
-        stop ("Dosage should be coded as 0, 1, 2.")
+  if (multiallelic == F) {
+    if (!is.null(genotype) & is.numeric(genotype)) {
+      if (any(!na.omit(genotype) %in% 0:2)) {
+        stop("Dosage should be coded as 0, 1, 2.")
       }
 
-      if (length(unique(genotype)) == 2){
-        message ("This dataset only has two unique genotypes. Please note that this model assumes a value of 1 is the heterozygote")
+      if (length(unique(genotype)) == 2) {
+        message("This dataset only has two unique genotypes. Please note that this model assumes a value of 1 is the heterozygote")
       }
-
     } else {
-
-      templev <- as.factor(genotype) %>% levels %>% sort
+      templev <- as.factor(genotype) %>%
+        levels() %>%
+        sort()
 
       # determine which value is heterozygote if templev is shorter than 3
 
-      if (length(templev) == 2){
-
-        templev2 <- sapply(templev, function(x){
+      if (length(templev) == 2) {
+        templev2 <- sapply(templev, function(x) {
           length(unique(strsplit(x, split = "")[[1]]))
         })
 
-        if (templev2[1] == max(templev2)){
+        if (templev2[1] == max(templev2)) {
           templev <- c("AA", names(templev2))
         }
 
-        if (templev2[1] == templev2[2]){
+        if (templev2[1] == templev2[2]) {
           templev <- c(names(templev2)[1], "AB", names(templev2)[2])
         }
 
         rm(templev2)
       }
 
-      genotype <- as.numeric(factor(genotype, levels = templev)) -1
+      genotype <- as.numeric(factor(genotype, levels = templev)) - 1
       rm(templev)
     }
   } else {
@@ -99,9 +96,11 @@ check_data <- function(id,
 
   # Make a ped object.
 
-  ped <- data.frame(ID     = as.character(id),
-                    MOTHER = as.character(mother),
-                    FATHER = as.character(father))
+  ped <- data.frame(
+    ID = as.character(id),
+    MOTHER = as.character(mother),
+    FATHER = as.character(father)
+  )
 
   ped$MOTHER[which(ped$MOTHER == 0)] <- NA
   ped$FATHER[which(ped$FATHER == 0)] <- NA
@@ -116,44 +115,39 @@ check_data <- function(id,
 
   # Check all the sexes are okay re: heterogametic sex
 
-  sex_system = NULL
+  sex_system <- NULL
 
-  if(!is.null(sex)){
-
-    if(any(is.na(ped$sex)) || any(!ped$sex %in% c(1, 2))){
+  if (!is.null(sex)) {
+    if (any(is.na(ped$sex)) || any(!ped$sex %in% c(1, 2))) {
       stop("Sex must be specified as 1 (heterogametic sex) and 2 (homogametic sex) for all ids for sex-linked loci.")
     }
 
-    if(length(unique(ped$sex[which(ped$ID %in% ped$MOTHER)])) > 1){
+    if (length(unique(ped$sex[which(ped$ID %in% ped$MOTHER)])) > 1) {
       stop("Some mothers have been assigned as males - please check sex designations.")
     }
 
-    if(length(unique(ped$sex[which(ped$ID %in% ped$FATHER)])) > 1){
+    if (length(unique(ped$sex[which(ped$ID %in% ped$FATHER)])) > 1) {
       stop("Some fathers have been assigned as females - please check sex designations.")
     }
 
 
-    if(any(ped$ID[which(ped$sex == 1)] %in% ped$MOTHER) || any(ped$ID[which(ped$sex == 2)] %in% ped$FATHER)){
+    if (any(ped$ID[which(ped$sex == 1)] %in% ped$MOTHER) || any(ped$ID[which(ped$sex == 2)] %in% ped$FATHER)) {
       message("Sex-linked models will assume a ZW system")
-      sex_system = "ZW"
-
+      sex_system <- "ZW"
     } else {
       message("Sex-linked models will assume a XY system")
-      sex_system = "XY"
+      sex_system <- "XY"
     }
-
-
   }
 
   # Add cohort information to ped.
 
   if (!is.null(cohort)) {
-
     ped$cohort <- cohort
 
     # remove anything not cohorted
 
-    if(length(which(is.na(cohort))) > 0){
+    if (length(which(is.na(cohort))) > 0) {
       message(paste0("Removed ", length(which(is.na(cohort))), " ids with no cohort information."))
     }
     ped <- filter(ped, !is.na(cohort))
@@ -170,21 +164,18 @@ check_data <- function(id,
     names(x1) <- c("FATHER", "Dad.cohort")
     suppressMessages(x <- left_join(x, x1))
 
-    badids <- c(which(x$cohort == x$Mum.cohort),which(x$cohort == x$Dad.cohort))
+    badids <- c(which(x$cohort == x$Mum.cohort), which(x$cohort == x$Dad.cohort))
 
-    if (length(badids) > 0){
-      message(x[badids,])
-      stop ("Some parents and offspring are in the same cohort.
+    if (length(badids) > 0) {
+      message(x[badids, ])
+      stop("Some parents and offspring are in the same cohort.
             See output for problem lines.")
     }
 
     rm(x, x1, badids)
-
   } else {
-
     ped$cohort <- kindepth(ped$ID, ped$FATHER, ped$MOTHER)
-    message(paste0("No cohorts defined - cohorts determined based on pedigree depth. There are ", max(ped$cohort)+1, " generations."))
-
+    message(paste0("No cohorts defined - cohorts determined based on pedigree depth. There are ", max(ped$cohort) + 1, " generations."))
   }
 
   # If cohort is provided, throw warning if any have no genotype information
@@ -193,7 +184,7 @@ check_data <- function(id,
     group_by(cohort) %>%
     summarise(n = length(which(!is.na(genotype))))
 
-  if(any(x9$n == 0)){
+  if (any(x9$n == 0)) {
     x9 <- select(x9, n == 0)
     warning(paste0("Cohorts ", paste(x9$cohort, collapse = ", "), " have no genotyped individuals."))
   }
@@ -205,6 +196,4 @@ check_data <- function(id,
 
 
   list(ped = ped, sex_system = sex_system)
-
-
 }

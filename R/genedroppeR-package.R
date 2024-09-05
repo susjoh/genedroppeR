@@ -5,5 +5,3 @@
 #' @importFrom gridExtra grid.arrange
 #' @importFrom stats lm na.omit runif
 "_PACKAGE"
-
-

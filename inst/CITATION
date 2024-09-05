@@ -1,0 +1,6 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "genedroppeR: An R packages to run single-locus genedrop analyses through complex pedigrees"",
+  author   = "Susan E. Johnston"",
+  year     = "2024"
+)

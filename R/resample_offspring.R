@@ -19,29 +19,22 @@
 #' @export
 
 
-resample_offspring_func <- function(ped){
-
-  cohort = MOTHER = FATHER = NULL
+resample_offspring_func <- function(ped) {
+  cohort <- MOTHER <- FATHER <- NULL
 
   lu_mum <- NULL
   lu_dad <- NULL
 
-  for(h in 1:max(ped$cohort)){
-
+  for (h in 1:max(ped$cohort)) {
     coparents <- filter(ped, cohort == h)$ID
 
     lookup_mum <- data.frame(MOTHER = sort(unique(filter(ped, MOTHER %in% coparents)$MOTHER)))
 
-    if(nrow(lookup_mum) > 0){
-
-      if(nrow(lookup_mum) > 1){
-
+    if (nrow(lookup_mum) > 0) {
+      if (nrow(lookup_mum) > 1) {
         lookup_mum$new.MOTHER <- sample(lookup_mum$MOTHER, replace = F)
-
       } else {
-
         lookup_mum$new.MOTHER <- lookup_mum$MOTHER
-
       }
 
       lu_mum <- rbind(lu_mum, lookup_mum)
@@ -49,16 +42,11 @@ resample_offspring_func <- function(ped){
 
     lookup_dad <- data.frame(FATHER = sort(unique(filter(ped, FATHER %in% coparents)$FATHER)))
 
-    if(nrow(lookup_dad) > 0){
-
-      if(nrow(lookup_dad) > 1){
-
+    if (nrow(lookup_dad) > 0) {
+      if (nrow(lookup_dad) > 1) {
         lookup_dad$new.FATHER <- sample(lookup_dad$FATHER, replace = F)
-
       } else {
-
         lookup_dad$FATHER <- lookup_dad$FATHER
-
       }
 
       lu_dad <- rbind(lu_dad, lookup_dad)
@@ -74,5 +62,4 @@ resample_offspring_func <- function(ped){
   ped$FATHER <- ped$new.FATHER
 
   ped
-
 }

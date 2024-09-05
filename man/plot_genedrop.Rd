@@ -30,17 +30,19 @@ data.}
 }
 \examples{
 data(unicorn)
-genedrop_obj <- genedrop_snp(id = unicorn$id,
-                             mother = unicorn$mother,
-                             father = unicorn$father,
-                             cohort = unicorn$cohort,
-                             genotype = unicorn$Horns,
-                             nsim = 100,
-                             n_founder_cohorts = 4,
-                             fix_founders = TRUE,
-                             verbose = TRUE,
-                             interval = 10,
-                             resample_offspring = FALSE)
+genedrop_obj <- genedrop_snp(
+  id = unicorn$id,
+  mother = unicorn$mother,
+  father = unicorn$father,
+  cohort = unicorn$cohort,
+  genotype = unicorn$Horns,
+  nsim = 100,
+  n_founder_cohorts = 4,
+  fix_founders = TRUE,
+  verbose = TRUE,
+  interval = 10,
+  resample_offspring = FALSE
+)
 plot_genedrop(genedrop_obj)
 
 }

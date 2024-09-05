@@ -21,11 +21,13 @@ individuals within each cohort.
 \examples{
 
 data(unicorn)
-unicorn_summary <- summary_cohort(id = unicorn$id,
-                                  mother = unicorn$mother,
-                                  father = unicorn$father,
-                                  cohort = unicorn$cohort,
-                                  genotype = unicorn$Horns)
+unicorn_summary <- summary_cohort(
+  id = unicorn$id,
+  mother = unicorn$mother,
+  father = unicorn$father,
+  cohort = unicorn$cohort,
+  genotype = unicorn$Horns
+)
 plot_genedrop_cohort(unicorn_summary)
 
 }

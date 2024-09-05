@@ -43,22 +43,24 @@
 #' @examples
 #' data(unicorn)
 #' sub_unicorn <- subset(unicorn, cohort < 2010)
-#' genedrop_obj <- genedrop_multi(id = sub_unicorn$id,
-#'                              mother = sub_unicorn$mother,
-#'                              father = sub_unicorn$father,
-#'                              cohort = sub_unicorn$cohort,
-#'                              genotype = sub_unicorn$MHC,
-#'                              nsim = 10,
-#'                              n_founder_cohorts = 4,
-#'                              fix_founders = TRUE,
-#'                              verbose = TRUE,
-#'                              interval = 1,
-#'                              resample_offspring = FALSE)
+#' genedrop_obj <- genedrop_multi(
+#'   id = sub_unicorn$id,
+#'   mother = sub_unicorn$mother,
+#'   father = sub_unicorn$father,
+#'   cohort = sub_unicorn$cohort,
+#'   genotype = sub_unicorn$MHC,
+#'   nsim = 10,
+#'   n_founder_cohorts = 4,
+#'   fix_founders = TRUE,
+#'   verbose = TRUE,
+#'   interval = 1,
+#'   resample_offspring = FALSE
+#' )
 #'
 #' summary_genedrop(genedrop_obj)
 #' plot_genedrop(genedrop_obj)
 #'
-#' #' @export
+#' @export
 
 
 genedrop_multi <- function(id,
@@ -66,7 +68,7 @@ genedrop_multi <- function(id,
                            father,
                            cohort = NULL,
                            genotype,
-                           genotype_delim = '',
+                           genotype_delim = "",
                            nsim,
                            n_founder_cohorts = 1,
                            fix_founders = TRUE,
@@ -74,9 +76,8 @@ genedrop_multi <- function(id,
                            interval = 100,
                            resample_offspring = FALSE,
                            remove_founders = TRUE,
-                           return_full_results = NULL){
-
-  Cohort = Simulation = p = NULL
+                           return_full_results = NULL) {
+  Cohort <- Simulation <- p <- NULL
 
   # Format the data
 
@@ -92,10 +93,12 @@ genedrop_multi <- function(id,
 
   y <- subset(ped, select = c(genotype, cohort))
   y$genotype <- as.character(y$genotype)
-  y$Allele1 <- sapply(y$genotype, function(foo)
-    strsplit(foo, split = genotype_delim, fixed = T)[[1]][1])
-  y$Allele2 <- sapply(y$genotype, function(foo)
-    strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
+  y$Allele1 <- sapply(y$genotype, function(foo) {
+    strsplit(foo, split = genotype_delim, fixed = T)[[1]][1]
+  })
+  y$Allele2 <- sapply(y$genotype, function(foo) {
+    strsplit(foo, split = genotype_delim, fixed = T)[[1]][2]
+  })
 
   y <- melt(y, id.vars = c("genotype", "cohort"))
 
@@ -103,14 +106,14 @@ genedrop_multi <- function(id,
 
   x <- table(y$cohort, y$value, useNA = "always")
   x <- matrix(x, ncol = ncol(x), dimnames = dimnames(x))
-  if (any(is.na(row.names(x)))) x <- x[-which(is.na(row.names(x))),]
+  if (any(is.na(row.names(x)))) x <- x[-which(is.na(row.names(x))), ]
 
 
   x <- cbind(data.frame(cohort = row.names(x)), x)
-  x$GenoCount <- rowSums(x[,2:(ncol(x)-1)])
-  x$FullCount <- rowSums(x[,2:(ncol(x)-1)])
+  x$GenoCount <- rowSums(x[, 2:(ncol(x) - 1)])
+  x$FullCount <- rowSums(x[, 2:(ncol(x) - 1)])
 
-  for(i in x.allele) x[,i] <- x[,i]/x$GenoCount
+  for (i in x.allele) x[, i] <- x[, i] / x$GenoCount
 
 
 
@@ -119,14 +122,10 @@ genedrop_multi <- function(id,
 
   # If founders are fixed, determine which IDs are founders!
 
-  if (fix_founders == T){
-
+  if (fix_founders == T) {
     fixed_founders <- subset(ped, cohort %in% x$cohort[1:n_founder_cohorts] & !is.na(genotype))$ID
-
   } else {
-
     fixed_founders <- NULL
-
   }
 
   # index the pedigree
@@ -141,8 +140,8 @@ genedrop_multi <- function(id,
   ped$Mum.Allele <- sapply(ped$genotype, function(foo) strsplit(foo, split = genotype_delim, fixed = T)[[1]][1])
   ped$Dad.Allele <- sapply(ped$genotype, function(foo) strsplit(foo, split = genotype_delim, fixed = T)[[1]][2])
 
-  ped$Mum.Allele[which(ped$cohort %in% x$cohort[(n_founder_cohorts+1):nrow(x)])] <- NA
-  ped$Dad.Allele[which(ped$cohort %in% x$cohort[(n_founder_cohorts+1):nrow(x)])] <- NA
+  ped$Mum.Allele[which(ped$cohort %in% x$cohort[(n_founder_cohorts + 1):nrow(x)])] <- NA
+  ped$Dad.Allele[which(ped$cohort %in% x$cohort[(n_founder_cohorts + 1):nrow(x)])] <- NA
 
   ped$ID <- as.character(ped$ID)
   ped$MOTHER <- as.character(ped$MOTHER)
@@ -156,15 +155,14 @@ genedrop_multi <- function(id,
 
   sim.list <- list()
 
-  for(simulation in 1:nsim){
-
-    if (verbose){
-      if (simulation %in% seq(1, nsim, interval)){
+  for (simulation in 1:nsim) {
+    if (verbose) {
+      if (simulation %in% seq(1, nsim, interval)) {
         message(paste0("Running simulation ", simulation, " of ", nsim, "."))
       }
     }
 
-    if(resample_offspring){
+    if (resample_offspring) {
       ped <- resample_offspring_func(ped.hold)
     } else {
       ped <- ped.hold
@@ -176,47 +174,60 @@ genedrop_multi <- function(id,
 
     # Sample the founders
 
-    for(h in 1:n_founder_cohorts){
-
+    for (h in 1:n_founder_cohorts) {
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER) & !haplo.frame$ID %in% fixed_founders)
 
-      if(length(y1) > 0) haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
-                                                             1,
-                                                             function(y) y[((runif (1) > 0.5) + 1L)])
+      if (length(y1) > 0) {
+        haplo.frame$Mum.Allele[y1] <- apply(
+          haplo.frame[haplo.frame$MOTHER[y1], c("Mum.Allele", "Dad.Allele")],
+          1,
+          function(y) y[((runif(1) > 0.5) + 1L)]
+        )
+      }
 
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER) & !haplo.frame$ID %in% fixed_founders)
 
-      if(length(y2) > 0) haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
-                                                             1,
-                                                             function(y) y[((runif (1) > 0.5) + 1L)])
+      if (length(y2) > 0) {
+        haplo.frame$Dad.Allele[y2] <- apply(
+          haplo.frame[haplo.frame$FATHER[y2], c("Mum.Allele", "Dad.Allele")],
+          1,
+          function(y) y[((runif(1) > 0.5) + 1L)]
+        )
+      }
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Mum.Allele))
 
-      if(length(y3) > 0) haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+      if (length(y3) > 0) haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
 
       y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$Dad.Allele))
 
-      if(length(y4) > 0) haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
+      if (length(y4) > 0) haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(x.allele, size = 1, prob = x[h, x.allele]))
 
       rm(y1, y2, y3, y4)
-
     }
 
     # sample the rest
 
-    for(h in (n_founder_cohorts+1):nrow(x)){
-
+    for (h in (n_founder_cohorts + 1):nrow(x)) {
       y1 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$MOTHER))
 
-      if(length(y1) > 0) haplo.frame$Mum.Allele[y1] <- apply(haplo.frame[haplo.frame$MOTHER[y1],c("Mum.Allele", "Dad.Allele")],
-                                                             1,
-                                                             function(y) y[((runif (1) > 0.5) + 1L)])
+      if (length(y1) > 0) {
+        haplo.frame$Mum.Allele[y1] <- apply(
+          haplo.frame[haplo.frame$MOTHER[y1], c("Mum.Allele", "Dad.Allele")],
+          1,
+          function(y) y[((runif(1) > 0.5) + 1L)]
+        )
+      }
 
       y2 <- which(haplo.frame$cohort == x$cohort[h] & !is.na(haplo.frame$FATHER))
 
-      if(length(y2) > 0) haplo.frame$Dad.Allele[y2] <- apply(haplo.frame[haplo.frame$FATHER[y2],c("Mum.Allele", "Dad.Allele")],
-                                                             1,
-                                                             function(y) y[((runif (1) > 0.5) + 1L)])
+      if (length(y2) > 0) {
+        haplo.frame$Dad.Allele[y2] <- apply(
+          haplo.frame[haplo.frame$FATHER[y2], c("Mum.Allele", "Dad.Allele")],
+          1,
+          function(y) y[((runif(1) > 0.5) + 1L)]
+        )
+      }
 
       # Get allele frequencies
 
@@ -226,11 +237,11 @@ genedrop_multi <- function(id,
 
       y3 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$MOTHER))
 
-      if(length(y3) > 0)  haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
+      if (length(y3) > 0) haplo.frame$Mum.Allele[y3] <- sapply(y3, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
 
       y4 <- which(haplo.frame$cohort == x$cohort[h] & is.na(haplo.frame$FATHER))
 
-      if(length(y4) > 0) haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
+      if (length(y4) > 0) haplo.frame$Dad.Allele[y4] <- sapply(y4, function(y) sample(temp.freq$Var1, size = 1, prob = temp.freq$Freq))
 
       rm(y1, y2, y3, y4)
     }
@@ -243,7 +254,6 @@ genedrop_multi <- function(id,
     sim.list[[simulation]] <- haplo.frame
 
     rm(haplo.frame, h)
-
   }
 
   sim.results <- bind_rows(sim.list)
@@ -252,7 +262,7 @@ genedrop_multi <- function(id,
 
   names(sim.results)[names(sim.results) == "genotype"] <- "True.Geno"
 
-  if(!is.null(return_full_results)) return_full_results <- sim.results
+  if (!is.null(return_full_results)) return_full_results <- sim.results
 
   genedrop_obj <- process_genedrop(sim.results)
 
@@ -267,26 +277,25 @@ genedrop_multi <- function(id,
   sim_freq_hold <- genedrop_obj$simulated_frequencies
   obs_freq_hold <- genedrop_obj$observed_frequencies
 
-  if(remove_founders){
-    if(length(n_founder_cohorts) == 1){
-
+  if (remove_founders) {
+    if (length(n_founder_cohorts) == 1) {
       genedrop_obj$simulated_frequencies <-
-        filter(genedrop_obj$simulated_frequencies,
-               !Cohort %in% unique(sort(genedrop_obj$simulated_frequencies$Cohort))[1:n_founder_cohorts])
+        filter(
+          genedrop_obj$simulated_frequencies,
+          !Cohort %in% unique(sort(genedrop_obj$simulated_frequencies$Cohort))[1:n_founder_cohorts]
+        )
 
       genedrop_obj$observed_frequencies <-
-        filter(genedrop_obj$observed_frequencies,
-               !Cohort %in% unique(sort(genedrop_obj$observed_frequencies$Cohort))[1:n_founder_cohorts])
-
+        filter(
+          genedrop_obj$observed_frequencies,
+          !Cohort %in% unique(sort(genedrop_obj$observed_frequencies$Cohort))[1:n_founder_cohorts]
+        )
     }
   }
 
-  if("Allele" %in% names(genedrop_obj$simulated_frequencies)){
-
-    Allele = unique(genedrop_obj$simulated_frequencies$Allele)
-
+  if ("Allele" %in% names(genedrop_obj$simulated_frequencies)) {
+    Allele <- unique(genedrop_obj$simulated_frequencies$Allele)
   } else {
-
     sim_freq_hold$Allele <- "p"
     obs_freq_hold$Allele <- "p"
 
@@ -295,7 +304,6 @@ genedrop_multi <- function(id,
   }
 
   suppressMessages({
-
     sim.slopes <- genedrop_obj$simulated_frequencies %>%
       group_by(Simulation, Allele) %>%
       summarise(Estimate = lm(p ~ Cohort)$coefficients[[2]])
@@ -304,7 +312,7 @@ genedrop_multi <- function(id,
       group_by(Simulation, Allele) %>%
       summarise(Estimate = lm(p ~ Cohort)$coefficients[[2]])
 
-    cumu.func <- function(x){
+    cumu.func <- function(x) {
       x <- diff(x)
       x <- ifelse(x < 0, x * -1, x)
       sum(x, na.rm = F)
@@ -317,34 +325,29 @@ genedrop_multi <- function(id,
     true.changes <- genedrop_obj$observed_frequencies %>%
       group_by(Simulation, Allele) %>%
       summarise(Estimate = cumu.func(p))
-
   })
 
   true.slopes$Estimates.Lower <- NA
   true.slopes$Estimates.Higher <- NA
 
-  for(i in 1:nrow(true.slopes)){
+  for (i in 1:nrow(true.slopes)) {
+    true.slopes$Estimates.Lower[i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
+      sim.slopes$Estimate < true.slopes$Estimate[i]))
 
-    true.slopes$Estimates.Lower [i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
-                                                      sim.slopes$Estimate < true.slopes$Estimate[i]))
-
-    true.slopes$Estimates.Higher [i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
-                                                       sim.slopes$Estimate > true.slopes$Estimate[i]))
-
+    true.slopes$Estimates.Higher[i] <- length(which(sim.slopes$Allele == true.slopes$Allele[i] &
+      sim.slopes$Estimate > true.slopes$Estimate[i]))
   }
 
 
   true.changes$Estimates.Lower <- NA
   true.changes$Estimates.Higher <- NA
 
-  for(i in 1:nrow(true.changes)){
+  for (i in 1:nrow(true.changes)) {
+    true.changes$Estimates.Lower[i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+      sim.changes$Estimate < true.changes$Estimate[i]))
 
-    true.changes$Estimates.Lower [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
-                                                       sim.changes$Estimate < true.changes$Estimate[i]))
-
-    true.changes$Estimates.Higher [i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
-                                                        sim.changes$Estimate > true.changes$Estimate[i]))
-
+    true.changes$Estimates.Higher[i] <- length(which(sim.changes$Allele == true.changes$Allele[i] &
+      sim.changes$Estimate > true.changes$Estimate[i]))
   }
 
   # Table the results
@@ -355,30 +358,31 @@ genedrop_multi <- function(id,
   restab <- rbind(true.changes, true.slopes)
   restab$Simulation <- nsim
   names(restab)[1] <- "Simulations"
-  restab <- restab[,c("Analysis", "Allele", "Estimate", "Estimates.Lower", "Estimates.Higher", "Simulations")]
+  restab <- restab[, c("Analysis", "Allele", "Estimate", "Estimates.Lower", "Estimates.Higher", "Simulations")]
 
 
   # Return results
 
   sim.results <- list(
     results = restab,
-    observed_frequencies  = obs_freq_hold,
+    observed_frequencies = obs_freq_hold,
     simulated_frequencies = sim_freq_hold,
-    full_results          = return_full_results,
-    n_founder_cohorts     = n_founder_cohorts,
-    remove_founders       = remove_founders,
-    fix_founders          = fix_founders,
-    resample_offspring    = resample_offspring,
-    slopes                = list(true.slopes = true.slopes,
-                                 sim.slopes  = sim.slopes),
-    cumulative_change = list(true.changes = true.changes,
-                             sim.changes  = sim.changes)
+    full_results = return_full_results,
+    n_founder_cohorts = n_founder_cohorts,
+    remove_founders = remove_founders,
+    fix_founders = fix_founders,
+    resample_offspring = resample_offspring,
+    slopes = list(
+      true.slopes = true.slopes,
+      sim.slopes = sim.slopes
+    ),
+    cumulative_change = list(
+      true.changes = true.changes,
+      sim.changes = sim.changes
+    )
   )
 
   class(sim.results) <- "genedroppeR"
 
   sim.results
-
 }
-
-
