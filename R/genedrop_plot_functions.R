@@ -1,15 +1,29 @@
-#' `plot_genedrop()`: Plot a summary graph of Gene-Drop Simulations.
+#' `plot_genedrop()`: Plot a summary graph of `genedrop_...()` outputs.
 #'
 #' @param genedrop_obj Gene-Drop object
 #' @param analysis_to_plot Default = "all". Options are "frequency",
-#'   "directional" and "cumulative". This will print graphs of allele frequency
+#'   "directional" and "cumulative". This will output graphs of allele frequency
 #'   changes, directional change, and cumulative change. If the locus is
-#'   multi-allelic, the user will be prmopted to  Press <Enter> to advance
-#'   through each option. In biallelic and multi-allelic cases, the user can
-#'   specify options to show specific graphs (e.g. "directional").
+#'   multi-allelic and the user specifies the default option ("all"), the user
+#'   will be prompted to press <Enter> to advance through each option.
 #' @param sim_alpha Default = 0.3. Alpha (transparency) value for plotted lines.
 #' @param obs_line_col Default = "red". Line colour to use for the observed
 #'   data.
+#' @examples
+#' data(unicorn)
+#' genedrop_obj <- genedrop_snp(id = unicorn$id,
+#'                              mother = unicorn$mother,
+#'                              father = unicorn$father,
+#'                              cohort = unicorn$cohort,
+#'                              genotype = unicorn$Horns,
+#'                              nsim = 100,
+#'                              n_founder_cohorts = 4,
+#'                              fix_founders = TRUE,
+#'                              verbose = TRUE,
+#'                              interval = 10,
+#'                              resample_offspring = FALSE)
+#' plot_genedrop(genedrop_obj)
+#'
 #' @export
 #'
 
@@ -27,6 +41,7 @@ plot_genedrop <- function(genedrop_obj,
     geom_line(alpha = sim_alpha) +
     geom_line(data = genedrop_obj$observed_frequencies, aes(Cohort, p), col = obs_line_col) +
     theme_bw() +
+    theme(plot.title = element_text(size = 10)) +
     geom_vline(xintercept = min(genedrop_obj$observed_frequencies$Cohort)+genedrop_obj$n_founder_cohorts-0.5, linetype= "dashed") +
     ggtitle(paste0("Allele Frequency Changes: Nsim = ", max(genedrop_obj$simulated_frequencies$Simulation))) +
     facet_wrap(~Allele)
@@ -36,6 +51,7 @@ plot_genedrop <- function(genedrop_obj,
     facet_wrap(~Allele) +
     geom_vline(data = genedrop_obj$slopes$true.slopes, aes(xintercept = Estimate), col = obs_line_col) +
     theme_bw() +
+    theme(plot.title = element_text(size = 10)) +
     ggtitle(paste0("Distribution of Regression Slopes: Nsim = ", max(genedrop_obj$simulated_frequencies$Simulation)))
 
   p3 <- ggplot(genedrop_obj$cumulative_change$sim.changes, aes(Estimate)) +
@@ -43,6 +59,7 @@ plot_genedrop <- function(genedrop_obj,
     facet_wrap(~Allele) +
     geom_vline(data = genedrop_obj$cumulative_change$true.changes, aes(xintercept = Estimate), col = obs_line_col) +
     theme_bw() +
+    theme(plot.title = element_text(size = 10)) +
     ggtitle(paste0("Distribution of Cumulative Change: Nsim = ", max(genedrop_obj$simulated_frequencies$Simulation)))
 
   if(analysis_to_plot == "all"){
@@ -70,12 +87,24 @@ plot_genedrop <- function(genedrop_obj,
 
 }
 
-#' `plot_genedrop_cohort()`: Plot a summary graph of Gene-Drop Simulations.
+#' `plot_genedrop_cohort()`: Plot a summary graph of an object produced by
+#' `summary_cohort()`. This will plot the observed temporal dynamics of the
+#' locis, as well as the proprtion of founder individuals and genotyped
+#' individuals within each cohort.
 #'
 #' @param cohort_obj data.frame created by `summary_cohort()`
+#' @examples
+#'
+#' data(unicorn)
+#' unicorn_summary <- summary_cohort(id = unicorn$id,
+#'                                   mother = unicorn$mother,
+#'                                   father = unicorn$father,
+#'                                   cohort = unicorn$cohort,
+#'                                   genotype = unicorn$Horns)
+#' plot_genedrop_cohort(unicorn_summary)
+#'
 #' @export
 #'
-
 
 
 plot_genedrop_cohort <- function(cohort_obj){
@@ -91,11 +120,13 @@ plot_genedrop_cohort <- function(cohort_obj){
   p2 <- ggplot(x, aes(cohort, PropFounders)) +
     geom_line() +
     theme_bw() +
+    theme(plot.title = element_text(size = 10)) +
     ggtitle("Proportion of Founders")
 
   p3 <- ggplot(x, aes(cohort, PropGenotyped)) +
     geom_line() +
     theme_bw() +
+    theme(plot.title = element_text(size = 10)) +
     ggtitle("Proportion of Cohort Genotyped")
 
   # Temporal trend
@@ -118,6 +149,7 @@ plot_genedrop_cohort <- function(cohort_obj){
       stat_smooth(method = "lm") +
       facet_wrap(~variable) +
       theme_bw() +
+      theme(plot.title = element_text(size = 10)) +
       ggtitle("Temporal dynamics of alleles")
 
   } else {
@@ -127,6 +159,7 @@ plot_genedrop_cohort <- function(cohort_obj){
       stat_smooth(method = "lm") +
       facet_wrap(~variable) +
       theme_bw() +
+      theme(plot.title = element_text(size = 10)) +
       ggtitle("Temporal dynamics of alleles")
   }
 

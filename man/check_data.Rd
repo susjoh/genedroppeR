@@ -24,7 +24,7 @@ be 0 or NA.}
 be 0 or NA.}
 
 \item{cohort}{vector (optional). Cohort number (e.g. birth year)
-corresponding to the id.}
+corresponding to the id. Must be consecutive integers.}
 
 \item{genotype}{vector. Genotypes corresponding to id.}
 
@@ -36,8 +36,7 @@ vector only needs to be specified for simulations on sex-linked SNPs.}
 \item{multiallelic}{boolean. Default = FALSE}
 }
 \description{
-This function is used within `genedrop_...` functions to check and format the
+This function is run within `genedrop_...` functions to check and format the
 data for downstream genedrop analysis. Returns an object `ped` that is
-correctly formatted for genedrop analysis. Note - this function is
-automatically run in all `genedrop_...` functions.
+correctly formatted for genedrop analysis.
 }

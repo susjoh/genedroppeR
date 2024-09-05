@@ -2,7 +2,7 @@
 % Please edit documentation in R/genedrop_multi.R
 \name{genedrop_multi}
 \alias{genedrop_multi}
-\title{Conduct a single Gene-Drop Simulation for a multi-allelic locus.}
+\title{`genedrop_multi()`: Conduct a genedrop simulation for a multi-allelic locus.}
 \usage{
 genedrop_multi(
   id,
@@ -28,11 +28,13 @@ genedrop_multi(
 
 \item{father}{vector. Paternal IDs corresponding to id.}
 
-\item{cohort}{vector (optional). Cohort number (e.g. birth year) corresponding to the id.}
+\item{cohort}{vector (optional). Cohort number (e.g. birth year)
+corresponding to the id. Must be consecutive integers.}
 
-\item{genotype}{vector. Genotypes IDs corresponding to id.}
+\item{genotype}{vector. Genotype IDs corresponding to id.}
 
-\item{genotype_delim}{char. A character denoting the genotype delimited. Default = "".}
+\item{genotype_delim}{char. A character denoting the genotype delimited.
+Default = "".}
 
 \item{nsim}{integer. Number of genedrop simulations to run.}
 
@@ -41,11 +43,11 @@ pedigree that will sample from the true allele frequences (these are
 defined as "sampled"). All cohorts following these ones are "simulated" and
 are used for comparisons of changes in allele frequency.}
 
-\item{fix_founders}{logical. Default = TRUE. Determines whether individuals in
-founder cohorts should be given their true recorded genotypes (if known).
-For individuals with no known genotype, their genotypes are sampled based
-on the observed cohort allele frequency. If FALSE, then all IDs are sampled
-based on the cohort allele frequencies.}
+\item{fix_founders}{logical. Default = TRUE. Determines whether individuals
+in founder cohorts should be given their true recorded genotypes (if
+known). For individuals with no known genotype, their genotypes are sampled
+based on the observed cohort allele frequency. If FALSE, then all IDs are
+sampled based on the cohort allele frequencies.}
 
 \item{verbose}{logical. Output the progress of the run.}
 
@@ -60,11 +62,20 @@ offspring, but will also mean that pedigrees are not directly comparable.}
 \item{remove_founders}{Default = TRUE. If TRUE, then the founder cohorts will
 be removed from calculations of directional and cumulative change.}
 
-\item{return_full_results}{Default = NULL. This will also output tables
-of all individually simulated genotypes.}
+\item{return_full_results}{Default = NULL. This will also output tables of
+all individually simulated genotypes.}
 }
 \description{
-Conduct a single Gene-Drop Simulation for a multi-allelic locus.
+This function conducts a genedrop simulation for a single bi-allelic locus
+(e.g. a SNP). For biallelic loci (e.g. SNPs), please use `genedrop_snp()`. At
+present, this package does not support sex-linked multi-allelic loci. Before
+running this function, users should first summarise and visualise their data
+using `summary_cohort()` to determine an appropriate value for
+`n_founder_cohorts`. This function will return an object that contains the
+cohort allele frequences in the observed and simulated datasets. Overall
+results of directional and balancing selection can be observed using
+`summary()`. For more detail on specifying model parameters, please consult
+the tutorial at https://github.com/susjoh/genedroppeR.
 }
 \examples{
 data(unicorn)
@@ -80,4 +91,9 @@ genedrop_obj <- genedrop_multi(id = sub_unicorn$id,
                              verbose = TRUE,
                              interval = 1,
                              resample_offspring = FALSE)
+
+summary_genedrop(genedrop_obj)
+plot_genedrop(genedrop_obj)
+
+#' @export
 }

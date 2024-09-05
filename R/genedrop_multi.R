@@ -1,23 +1,34 @@
-#' Conduct a single Gene-Drop Simulation for a multi-allelic locus.
+#' `genedrop_multi()`: Conduct a genedrop simulation for a multi-allelic locus.
 #'
-#' Conduct a single Gene-Drop Simulation for a multi-allelic locus.
+#' This function conducts a genedrop simulation for a single bi-allelic locus
+#' (e.g. a SNP). For biallelic loci (e.g. SNPs), please use `genedrop_snp()`. At
+#' present, this package does not support sex-linked multi-allelic loci. Before
+#' running this function, users should first summarise and visualise their data
+#' using `summary_cohort()` to determine an appropriate value for
+#' `n_founder_cohorts`. This function will return an object that contains the
+#' cohort allele frequences in the observed and simulated datasets. Overall
+#' results of directional and balancing selection can be observed using
+#' `summary()`. For more detail on specifying model parameters, please consult
+#' the tutorial at https://github.com/susjoh/genedroppeR.
 #'
 #' @param id vector. Individual IDs
 #' @param mother vector. Maternal IDs corresponding to id.
 #' @param father vector. Paternal IDs corresponding to id.
-#' @param cohort vector (optional). Cohort number (e.g. birth year) corresponding to the id.
-#' @param genotype vector. Genotypes IDs corresponding to id.
-#' @param genotype_delim char. A character denoting the genotype delimited. Default = "".
+#' @param cohort vector (optional). Cohort number (e.g. birth year)
+#'   corresponding to the id. Must be consecutive integers.
+#' @param genotype vector. Genotype IDs corresponding to id.
+#' @param genotype_delim char. A character denoting the genotype delimited.
+#'   Default = "".
 #' @param nsim integer. Number of genedrop simulations to run.
 #' @param n_founder_cohorts integer. The number of cohorts at the top of the
 #'   pedigree that will sample from the true allele frequences (these are
 #'   defined as "sampled"). All cohorts following these ones are "simulated" and
 #'   are used for comparisons of changes in allele frequency.
-#' @param fix_founders logical. Default = TRUE. Determines whether individuals in
-#'   founder cohorts should be given their true recorded genotypes (if known).
-#'   For individuals with no known genotype, their genotypes are sampled based
-#'   on the observed cohort allele frequency. If FALSE, then all IDs are sampled
-#'   based on the cohort allele frequencies.
+#' @param fix_founders logical. Default = TRUE. Determines whether individuals
+#'   in founder cohorts should be given their true recorded genotypes (if
+#'   known). For individuals with no known genotype, their genotypes are sampled
+#'   based on the observed cohort allele frequency. If FALSE, then all IDs are
+#'   sampled based on the cohort allele frequencies.
 #' @param resample_offspring logical. Default = FALSE. If FALSE, the same
 #'   pedigree structure as the observed pedigree is used. If TRUE, then
 #'   offspring are resampled across parents in each cohort. This is to remove
@@ -27,8 +38,8 @@
 #' @param interval int. Default 100. Output progress every 100 simulations.
 #' @param remove_founders Default = TRUE. If TRUE, then the founder cohorts will
 #'   be removed from calculations of directional and cumulative change.
-#' @param return_full_results Default = NULL. This will also output tables
-#'   of all individually simulated genotypes.
+#' @param return_full_results Default = NULL. This will also output tables of
+#'   all individually simulated genotypes.
 #' @examples
 #' data(unicorn)
 #' sub_unicorn <- subset(unicorn, cohort < 2010)
@@ -43,7 +54,11 @@
 #'                              verbose = TRUE,
 #'                              interval = 1,
 #'                              resample_offspring = FALSE)
-#' @export
+#'
+#' summary_genedrop(genedrop_obj)
+#' plot_genedrop(genedrop_obj)
+#'
+#' #' @export
 
 
 genedrop_multi <- function(id,

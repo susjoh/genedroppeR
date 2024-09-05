@@ -2,7 +2,10 @@
 % Please edit documentation in R/genedrop_plot_functions.R
 \name{plot_genedrop_cohort}
 \alias{plot_genedrop_cohort}
-\title{`plot_genedrop_cohort()`: Plot a summary graph of Gene-Drop Simulations.}
+\title{`plot_genedrop_cohort()`: Plot a summary graph of an object produced by
+`summary_cohort()`. This will plot the observed temporal dynamics of the
+locis, as well as the proprtion of founder individuals and genotyped
+individuals within each cohort.}
 \usage{
 plot_genedrop_cohort(cohort_obj)
 }
@@ -10,5 +13,19 @@ plot_genedrop_cohort(cohort_obj)
 \item{cohort_obj}{data.frame created by `summary_cohort()`}
 }
 \description{
-`plot_genedrop_cohort()`: Plot a summary graph of Gene-Drop Simulations.
+`plot_genedrop_cohort()`: Plot a summary graph of an object produced by
+`summary_cohort()`. This will plot the observed temporal dynamics of the
+locis, as well as the proprtion of founder individuals and genotyped
+individuals within each cohort.
+}
+\examples{
+
+data(unicorn)
+unicorn_summary <- summary_cohort(id = unicorn$id,
+                                  mother = unicorn$mother,
+                                  father = unicorn$father,
+                                  cohort = unicorn$cohort,
+                                  genotype = unicorn$Horns)
+plot_genedrop_cohort(unicorn_summary)
+
 }

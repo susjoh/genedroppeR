@@ -2,7 +2,7 @@
 % Please edit documentation in R/genedrop_plot_functions.R
 \name{plot_genedrop}
 \alias{plot_genedrop}
-\title{`plot_genedrop()`: Plot a summary graph of Gene-Drop Simulations.}
+\title{`plot_genedrop()`: Plot a summary graph of `genedrop_...()` outputs.}
 \usage{
 plot_genedrop(
   genedrop_obj,
@@ -15,11 +15,10 @@ plot_genedrop(
 \item{genedrop_obj}{Gene-Drop object}
 
 \item{analysis_to_plot}{Default = "all". Options are "frequency",
-"directional" and "cumulative". This will print graphs of allele frequency
+"directional" and "cumulative". This will output graphs of allele frequency
 changes, directional change, and cumulative change. If the locus is
-multi-allelic, the user will be prmopted to  Press <Enter> to advance
-through each option. In biallelic and multi-allelic cases, the user can
-specify options to show specific graphs (e.g. "directional").}
+multi-allelic and the user specifies the default option ("all"), the user
+will be prompted to press <Enter> to advance through each option.}
 
 \item{sim_alpha}{Default = 0.3. Alpha (transparency) value for plotted lines.}
 
@@ -27,5 +26,21 @@ specify options to show specific graphs (e.g. "directional").}
 data.}
 }
 \description{
-`plot_genedrop()`: Plot a summary graph of Gene-Drop Simulations.
+`plot_genedrop()`: Plot a summary graph of `genedrop_...()` outputs.
+}
+\examples{
+data(unicorn)
+genedrop_obj <- genedrop_snp(id = unicorn$id,
+                             mother = unicorn$mother,
+                             father = unicorn$father,
+                             cohort = unicorn$cohort,
+                             genotype = unicorn$Horns,
+                             nsim = 100,
+                             n_founder_cohorts = 4,
+                             fix_founders = TRUE,
+                             verbose = TRUE,
+                             interval = 10,
+                             resample_offspring = FALSE)
+plot_genedrop(genedrop_obj)
+
 }

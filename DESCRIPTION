@@ -13,3 +13,6 @@ LazyData: true
 Imports: ggplot2, reshape2, dplyr, kinship2, gridExtra
 RoxygenNote: 7.3.2
 Depends: R (>= 3.5.0)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

@@ -14,14 +14,16 @@ install_github("susjoh/genedroppeR")
 library(genedroppeR)
 ```
 
+### Case study
+
 The library comes with the `unicorn` dataset from a long-term study on the island of Áiteigin in Scotland (Figure 1). They have been genotyped for four loci:
 
 1. Horns, a biallelic locus for horn length;
 2. MHC, which characterises multi-allelic variation at the Magic Histocompatibility Locus;
--   Glitter, a biallelic locus responsible for a rare glitter coat polymorphism;
--   Xlinked, a generic X-linked SNP.
+3. Glitter, a biallelic locus responsible for a rare glitter coat polymorphism;
+4. Xlinked, a generic X-linked SNP.
 
-![Figure 1: A typical unicorn.](tutorial/figs/Unicorn.png){width="200"}
+![Figure 1: A typical unicorn.](tutorial/figs/Unicorn.png)
 
 Unicorns have a polygamous mating system, in common with other magical beasts. We can see an example of the pedigree below. The numbers at the side indicate the cohorts of when each unicorn was born:
 

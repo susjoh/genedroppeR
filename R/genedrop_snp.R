@@ -1,20 +1,21 @@
-#' genedrop_snp: Conduct a genedrop simulation for a biallelic locus.
+#' `genedrop_snp()`: Conduct a genedrop simulation for a biallelic locus.
 #'
 #' This function conducts a genedrop simulation for a single bi-allelic locus
-#' (e.g. a SNP). For multi-allelic loci, please use `genedrop_multi()`. Before
-#' running this function, users should first summarise and
-#' visualise their data using `summary_cohort()` to determine an appropriate value
-#' for `n_founder_cohorts`. This function will return an object that contains
-#' the cohort allele frequences in the observed and simulated datasets. Overall
-#' results of directional and balancing selection can be observed using
-#' `summary()`. For more detail on specifying model parameters, please consult
-#' the tutorial at https://github.com/susjoh/genedroppeR.
+#' (e.g. a SNP). For multi-allelic loci, use `genedrop_multi()` and for
+#' sex-linked loci, use `genedrop_snp_sexlinked()`. Before running this
+#' function, users should first summarise and visualise their data using
+#' `summary_cohort()` to determine an appropriate value for `n_founder_cohorts`.
+#' This function will return an object that contains the cohort allele
+#' frequences in the observed and simulated datasets. Overall results of
+#' directional and balancing selection can be observed using `summary()`. For
+#' more detail on specifying model parameters, please consult the tutorial at
+#' https://github.com/susjoh/genedroppeR.
 #'
 #' @param id vector. Individual IDs
 #' @param mother vector. Maternal IDs corresponding to id.
 #' @param father vector. Paternal IDs corresponding to id.
 #' @param cohort vector (optional). Cohort number (e.g. birth year)
-#'   corresponding to the id.
+#'   corresponding to the id. Must be consecutive integers.
 #' @param genotype vector. Genotypes corresponding to id.
 #' @param nsim integer. Default 1000. Number of genedrop simulations to run.
 #' @param n_founder_cohorts integer. The number of cohorts at the top of the
@@ -35,10 +36,11 @@
 #'   decision.
 #' @param remove_founders Default = TRUE. If TRUE, then the founder cohorts will
 #'   be removed from calculations of directional and cumulative change.
-#' @param return_full_results Default = NULL. This will also output tables
-#'   of all individually simulated genotypes.
+#' @param return_full_results Default = NULL. This will also output tables of
+#'   all individually simulated genotypes.
 #' @param verbose logical. Default = TRUE. Output the progress of the run.
-#' @param interval integer. Default 100. Output progress every 100 simulations.
+#' @param interval integer. Default 100. Output progress every `interval`
+#'   simulations.
 #' @examples
 #' data(unicorn)
 #' genedrop_obj <- genedrop_snp(id = unicorn$id,
@@ -46,15 +48,16 @@
 #'                              father = unicorn$father,
 #'                              cohort = unicorn$cohort,
 #'                              genotype = unicorn$Horns,
-#'                              nsim = 10,
+#'                              nsim = 100,
 #'                              n_founder_cohorts = 4,
 #'                              fix_founders = TRUE,
 #'                              verbose = TRUE,
-#'                              interval = 1,
+#'                              interval = 10,
 #'                              resample_offspring = FALSE)
+#' summary_genedrop(genedrop_obj)
+#' plot_genedrop(genedrop_obj)
 #'
 #' @export
-#
 
 genedrop_snp <- function(id,
                          mother,

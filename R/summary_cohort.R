@@ -14,11 +14,12 @@
 #' @examples
 #'
 #' data(unicorn)
-#' x <- summary_cohort(id = unicorn$id,
-#'                     mother = unicorn$mother,
-#'                     father = unicorn$father,
-#'                     cohort = unicorn$cohort,
-#'                     genotype = unicorn$Horns)
+#' unicorn_summary <- summary_cohort(id = unicorn$id,
+#'                                   mother = unicorn$mother,
+#'                                   father = unicorn$father,
+#'                                   cohort = unicorn$cohort,
+#'                                   genotype = unicorn$Horns)
+#' plot_genedrop_cohort(unicorn_summary)
 #'
 #' @export
 
