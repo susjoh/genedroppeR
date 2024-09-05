@@ -36,7 +36,7 @@ summary_genedrop <- function(genedrop_obj) {
 #' @param genedrop_obj An object of class "genedroppeR" as output by functions
 #'   `genedrop_...()`.
 #' @param genotype_delim char. Default = ''. Delimiter character for genotypes.
-#' @export
+#' @noRd
 
 
 process_genedrop <- function(genedrop_obj,

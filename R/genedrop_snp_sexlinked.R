@@ -58,6 +58,7 @@
 #' )
 #' summary_genedrop(genedrop_obj)
 #' plot_genedrop(genedrop_obj)
+#' @returns an output object of class "genedroppeR"
 #' @export
 
 genedrop_snp_sex <- function(id,

@@ -65,6 +65,9 @@ be removed from calculations of directional and cumulative change.}
 \item{return_full_results}{Default = NULL. This will also output tables of
 all individually simulated genotypes.}
 }
+\value{
+an output object of class "genedroppeR"
+}
 \description{
 This function conducts a genedrop simulation for a single bi-allelic locus
 (e.g. a SNP). For biallelic loci (e.g. SNPs), please use `genedrop_snp()`. At
@@ -96,5 +99,4 @@ genedrop_obj <- genedrop_multi(
 
 summary_genedrop(genedrop_obj)
 plot_genedrop(genedrop_obj)
-
 }

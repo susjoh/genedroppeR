@@ -12,6 +12,9 @@ plot_genedrop_cohort(cohort_obj)
 \arguments{
 \item{cohort_obj}{data.frame created by `summary_cohort()`}
 }
+\value{
+plot of output from `summary_cohort()` function
+}
 \description{
 `plot_genedrop_cohort()`: Plot a summary graph of an object produced by
 `summary_cohort()`. This will plot the observed temporal dynamics of the
@@ -29,5 +32,4 @@ unicorn_summary <- summary_cohort(
   genotype = unicorn$Horns
 )
 plot_genedrop_cohort(unicorn_summary)
-
 }

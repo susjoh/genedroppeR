@@ -25,6 +25,9 @@ will be prompted to press <Enter> to advance through each option.}
 \item{obs_line_col}{Default = "red". Line colour to use for the observed
 data.}
 }
+\value{
+plot of output from `genedrop_...()` functions
+}
 \description{
 `plot_genedrop()`: Plot a summary graph of `genedrop_...()` outputs.
 }
@@ -44,5 +47,4 @@ genedrop_obj <- genedrop_snp(
   resample_offspring = FALSE
 )
 plot_genedrop(genedrop_obj)
-
 }

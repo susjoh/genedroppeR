@@ -17,8 +17,8 @@
 #'   `sex` will force strict correspondence to maternal and paternal links. This
 #'   vector only needs to be specified for simulations on sex-linked SNPs.
 #' @param multiallelic boolean. Default = FALSE
-#' @import dplyr
-#' @export
+#' @returns formatted pedigree for genedrop
+#' @noRd
 
 check_data <- function(id,
                        mother,

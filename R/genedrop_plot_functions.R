@@ -25,7 +25,7 @@
 #'   resample_offspring = FALSE
 #' )
 #' plot_genedrop(genedrop_obj)
-#'
+#' @returns plot of output from `genedrop_...()` functions
 #' @export
 #'
 
@@ -102,7 +102,7 @@ plot_genedrop <- function(genedrop_obj,
 #'   genotype = unicorn$Horns
 #' )
 #' plot_genedrop_cohort(unicorn_summary)
-#'
+#' @returns plot of output from `summary_cohort()` function
 #' @export
 #'
 

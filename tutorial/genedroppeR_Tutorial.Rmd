@@ -70,7 +70,6 @@ unicorn.summ
 
 This output provides the allele frequencies for the A and G alleles per cohort, as well as a count of the number of genotyped individuals and the total number of individuals per cohort, the proportion of genotyped individuals, the numbers of non founders and founders, and the proportion of founders per cohort. A founder is defined as an individual where neither the mother or father is known.
 
-
 The frequency of the A allele, which confers a larger horn, seems to be increasing in the population:
 
 ```{r}

@@ -59,7 +59,7 @@
 #'
 #' summary_genedrop(genedrop_obj)
 #' plot_genedrop(genedrop_obj)
-#'
+#' @returns an output object of class "genedroppeR"
 #' @export
 
 
