@@ -119,12 +119,14 @@ plot_genedrop_cohort <- function(cohort_obj) {
   p2 <- ggplot(x, aes(cohort, PropFounders)) +
     geom_line() +
     theme_bw() +
+    coord_cartesian(ylim = c(0, 1)) +
     theme(plot.title = element_text(size = 10)) +
     ggtitle("Proportion of Founders")
 
   p3 <- ggplot(x, aes(cohort, PropGenotyped)) +
     geom_line() +
     theme_bw() +
+    coord_cartesian(ylim = c(0, 1)) +
     theme(plot.title = element_text(size = 10)) +
     ggtitle("Proportion of Cohort Genotyped")
 
